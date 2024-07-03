@@ -1,6 +1,8 @@
 <template>
   <div class="about">
     <h1>This is an about page</h1>
+    <h1>{{number}}</h1>
+    <button @click="handleClick">add</button>
   </div>
 </template>
 
@@ -13,3 +15,12 @@
   }
 }
 </style>
+
+<script setup>
+import { ref } from 'vue'
+let number = 0
+const handleClick = () => {
+  number++
+  console.log(number)
+}
+</script>

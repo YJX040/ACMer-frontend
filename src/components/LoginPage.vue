@@ -15,7 +15,7 @@
           </el-form-item>
         </el-form>
         <div style="margin-top: 30px; text-align:right" >
-          还没有账号？请<a href="/register">注册</a>
+          还没有账号？请 <router-link to="/register">注册</router-link>
         </div>
       </div>
     </div>

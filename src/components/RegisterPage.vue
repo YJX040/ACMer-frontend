@@ -63,6 +63,7 @@ const labelPosition = 'right'; // 设置默认的label位置
 const submitForm = () => {
   // 在这里编写提交表单的逻辑
   // 可以通过 formLabelAlign 对象获取表单数据，并执行相应的提交操作
+  
 };
 
 </script>
