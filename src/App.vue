@@ -34,8 +34,8 @@ const router = useRouter()
             <!-- <RouterLink to="/problems">题目列表</RouterLink> -->
           </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/recommendation">
-          <span @click="router.push({path: '/recommendation'})">智能推荐</span>
+        <el-menu-item index="/recommendations">
+          <span @click="router.push({path: '/recommendations'})">智能推荐</span>
           <!-- <RouterLink to="/recommendation">智能推荐</RouterLink> -->
         </el-menu-item>
         <div class="flex-grow"></div>
