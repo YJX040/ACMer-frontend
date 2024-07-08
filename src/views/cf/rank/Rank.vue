@@ -1,6 +1,6 @@
 <template>
     <div>
-
+        比赛信息
     </div>
 </template>
 

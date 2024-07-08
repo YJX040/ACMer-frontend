@@ -1,6 +1,6 @@
 <template>
     <div>
-        CF用户
+        CF
     </div>
 </template>
 
@@ -8,6 +8,4 @@
 
 </script>
 
-<style scoped>
-
-</style>
+<style lang="scss" scoped></style>

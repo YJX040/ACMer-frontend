@@ -1,16 +1,4 @@
 <template>
-<<<<<<< HEAD
-    <div>
-
-    </div>
-</template>
-
-<script setup>
-
-</script>
-
-<style lang="scss" scoped></style>
-=======
   <div>
     <div class="login-container">
       <div class="login-box">
@@ -113,4 +101,3 @@ const login = () => {
   text-align: right;
 }
 </style>
->>>>>>> 841dd7bcb5f457f53ca1951d3b3d76c54f132c44

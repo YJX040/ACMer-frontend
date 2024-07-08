@@ -1,74 +1,54 @@
 <template>
-  <el-menu
-    :default-active="activeIndex"
-    class="el-menu-demo"
-    mode="horizontal"
-    @select="handleSelect"
-  >
-    <el-menu-item index="1">首页</el-menu-item>
-    <el-menu-item index="2">用户列表</el-menu-item>
-    <el-sub-menu index="3">
-      <template #title>codeforces</template>
-      <el-menu-item index="3-1">比赛列表</el-menu-item>
-      <el-menu-item index="3-2">账户排名</el-menu-item>
-      <el-menu-item index="3-3">题目列表</el-menu-item>
-    </el-sub-menu>
-    <el-menu-item index="4">智能训练</el-menu-item>
-    <el-menu-item index="5">登录</el-menu-item>
-    <el-menu-item index="6">注册</el-menu-item>
-  </el-menu>
-</template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const activeIndex = ref('1')
-const router = useRouter()
-
-const handleSelect = (key: string, keyPath: string[]) => {
-  switch (key) {
-    case '1':
-      router.push('/')
-      break
-    case '2':
-      router.push('/user')
-      break
-    case '3-1':
-      router.push('/cf/contest')
-      break
-    case '3-2':
-      router.push('/cf/rank')
-      break
-    case '3-3':
-      router.push('/cf/user')
-      break
-    case '4':
-      router.push('/recommendations')
-      break
-    case '5':
-      router.push('/login')
-      break
-    case '6':
-      router.push('/register')
-      break
-    default:
-      break
+    <div class="container">
+      <aside class="sidebar">
+        <Collapse :isCollapse="isCollapse" @open="handleOpen" @close="handleClose"></Collapse>
+      </aside>
+      <main class="main-content">
+        <header class="breadcrumb">
+          <Bread></Bread>
+        </header>
+        <router-view></router-view>
+      </main>
+    </div>
+  </template>
+  
+  <script setup lang="ts">
+  import { ref } from 'vue'
+  import Bread from '../components/Bread.vue'
+  import Collapse from '../components/Collapse.vue'
+  const isCollapse = ref(false)
+  
+  const handleOpen = (key: string, keyPath: string[]) => {
+    console.log(key, keyPath)
   }
-}
-</script>
-
-<style scoped>
-.el-menu-demo {
-  background-color: #ffffff;
-  color: #000;
-}
-
-.el-menu-demo .el-menu-item {
-  cursor: pointer;
-}
-
-.el-menu-demo .el-menu-item .router-link-exact-active {
-  color: #ffd04b;
-}
-</style>
+  
+  const handleClose = (key: string, keyPath: string[]) => {
+    console.log(key, keyPath)
+  }
+  </script>
+  
+  <style scoped>
+  .container {
+    display: flex;
+    height: 100vh; /* 使容器填满整个视窗高度 */
+  }
+  
+  .sidebar {
+    padding: 20px; /* 内边距 */
+  }
+  
+  .main-content {
+    flex: 1; /* 主内容区域自适应宽度 */
+    padding: 20px; /* 内容区域内边距 */
+  }
+  
+  .breadcrumb {
+    padding: 10px;
+  }
+  
+  .el-icon {
+    font-size: 18px; /* 调整图标大小 */
+    margin-right: 10px; /* 可选：调整图标与文字之间的间距 */
+  }
+  </style>
+  
