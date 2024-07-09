@@ -1,18 +1,4 @@
 <template>
-<<<<<<< HEAD
-    <div>
-
-    </div>
-</template>
-
-<script setup>
-
-</script>
-
-<style scoped>
-
-</style>
-=======
   <el-table :data="tableData" style="width: 100%">
 <!-- column-key用于指定列的唯一标识符 -->
     <el-table-column
@@ -52,4 +38,3 @@ const props = defineProps({
 const columns = computed(() => props.columns);
 const tableData = computed(() => props.tableData);
 </script>
->>>>>>> 841dd7bcb5f457f53ca1951d3b3d76c54f132c44

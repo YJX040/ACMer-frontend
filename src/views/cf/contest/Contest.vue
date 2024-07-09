@@ -1,16 +1,4 @@
 <template>
-<<<<<<< HEAD
-    <div>
-
-    </div>
-</template>
-
-<script setup>
-
-</script>
-
-<style lang="scss" scoped></style>
-=======
   <List :columns="columns" :tableData="tableData" />
 </template>
 
@@ -78,4 +66,3 @@ const columns = [
   },
 ];
 </script>
->>>>>>> 841dd7bcb5f457f53ca1951d3b3d76c54f132c44
