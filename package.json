@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons": "^0.0.11",
     "axios": "^1.7.2",
     "echarts": "^5.5.1",
     "element-plus": "^2.7.6",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
     "@vitejs/plugin-vue-jsx": "^4.0.0",
+    "sass": "^1.77.6",
     "unplugin-auto-import": "^0.17.6",
     "unplugin-vue-components": "^0.27.2",
     "vite": "^5.3.1",

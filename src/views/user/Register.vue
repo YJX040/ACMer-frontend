@@ -1,11 +1,157 @@
 <template>
-    <div>
-
+  <div>
+    <div class="register-container">
+      <div class="register-box">
+        <div class="register-title">注册</div>
+        <el-form ref="formRef" :model="data.form" :rules="rules">
+          <el-form-item prop="username">
+            <el-input v-model="data.form.username" placeholder="请输入账号">
+              <template #prefix>
+                <el-icon class="el-input__icon"><User /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="email">
+            <el-input  v-model="data.form.email" placeholder="请输入电子邮件">
+              <template #prefix>
+                <el-icon class="el-input__icon"><Message /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input :type="passwordType" v-model="data.form.password" placeholder="请输入密码">
+              <template #prefix>
+                <el-icon class="el-input__icon"><Lock /></el-icon>
+              </template>
+              <template #suffix>
+                <el-icon class="el-input__icon" @click="togglePasswordVisibility">
+                  <component :is="passwordIcon" />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="confirmPassword">
+            <el-input :type="passwordType" v-model="data.form.confirmPassword" placeholder="请确认密码">
+              <template #prefix>
+                <el-icon class="el-input__icon"><Lock /></el-icon>
+              </template>
+              <template #suffix>
+                <el-icon class="el-input__icon" @click="togglePasswordVisibility">
+                  <component :is="passwordIcon" />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="role">
+            <el-select v-model="data.form.role" placeholder="请选择角色">
+              <el-option label="管理员" value="ADMIN"></el-option>
+              <el-option label="学生" value="STUDENT"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" class="register-button" @click="register">注册</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="login-link">
+          已有账号？请 <router-link to="/login">登录</router-link>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
+import { reactive, ref } from "vue";
+import { ElMessage } from "element-plus";
+import router from "@/router";
+import { User, Lock, View, Hide ,Message} from '@element-plus/icons-vue';
+import request from '@/utils/request'; // 请确保引入了用于发送请求的工具函数
 
+const data = reactive({
+  form: {
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "STUDENT"
+  }
+});
+
+const rules = reactive({
+  username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+  email: [{ required: true, message: '请输入电子邮件', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  confirmPassword: [{ required: true, message: '请确认密码', trigger: 'blur' }],
+  role: [{ required: true, message: '请选择角色', trigger: 'change' }]
+});
+
+const formRef = ref();
+
+const passwordType = ref('password');
+const passwordIcon = ref(Hide);
+
+const togglePasswordVisibility = () => {
+  if (passwordType.value === 'password') {
+    passwordType.value = 'text';
+    passwordIcon.value = View;
+  } else {
+    passwordType.value = 'password';
+    passwordIcon.value = Hide;
+  }
+};
+
+const register = () => {
+  formRef.value.validate((valid) => {
+    if (valid) {
+      if (data.form.password !== data.form.confirmPassword) {
+        ElMessage.error('两次输入的密码不一致');
+        return;
+      }
+      request.post('/register', data.form).then(res => {
+        if (res.code === '200') {
+          ElMessage.success('注册成功');
+          router.push('/login'); // 跳转
+        } else {
+          ElMessage.error(res.msg);
+        }
+      });
+    }
+  });
+};
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.register-container {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  margin-top: 60px;
+}
+
+.register-box {
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 8px;
+}
+
+.register-title {
+  font-weight: bold;
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.register-button {
+  width: 100%;
+}
+
+.login-link {
+  margin-top: 20px;
+  text-align: right;
+}
+</style>
