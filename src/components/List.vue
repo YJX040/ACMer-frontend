@@ -33,6 +33,25 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  showSearch: {
+    type: Boolean,
+    default: false,
+  },
+  showCheckbox: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const searchQuery = ref('');
+const showAll = ref(true);
+
+const filteredData = computed(() => {
+  return props.tableData.filter(row => {
+    const matchesSearch = row.testname?.includes(searchQuery.value) ?? true;
+    const matchesParticipation = showAll.value || row.num > 0;
+    return matchesSearch && matchesParticipation;
+  });
 });
 
 const columns = computed(() => props.columns);
