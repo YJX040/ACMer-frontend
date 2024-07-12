@@ -1,35 +1,34 @@
 <template>
-<<<<<<< HEAD
-    <div>
-
-    </div>
-</template>
-
-<script setup>
-
-</script>
-
-<style lang="scss" scoped></style>
-=======
   <div>
     <div class="login-container">
       <div class="login-box">
         <div class="login-title">登录</div>
-        <el-form ref="formRef" :model="data.form" :rules="rules">
+        <el-form ref="formRef" :model="form" :rules="rules" :initial-state="initialState">
           <el-form-item prop="username">
-            <el-input prefix-icon="el-icon-user" v-model="data.form.username" placeholder="请输入账号"></el-input>
+            <el-input v-model="form.username" placeholder="请输入账号">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <User />
+                </el-icon>
+              </template>
+            </el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input show-password prefix-icon="el-icon-lock" v-model="data.form.password" placeholder="请输入密码"></el-input>
-          </el-form-item>
-          <el-form-item prop="role">
-            <el-select style="width: 100%" v-model="data.form.role">
-              <el-option value="ADMIN" label="管理员"></el-option>
-              <el-option value="STUDENT" label="学生"></el-option>
-            </el-select>
+            <el-input :type="passwordType" v-model="form.password" placeholder="请输入密码">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <Lock />
+                </el-icon>
+              </template>
+              <template #suffix>
+                <el-icon class="el-input__icon" @click="togglePasswordVisibility">
+                  <component :is="passwordIcon" />
+                </el-icon>
+              </template>
+            </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="login-button" @click="login">登 录</el-button>
+            <el-button type="primary" class="login-button" @click="handleSubmit">登录</el-button>
           </el-form-item>
         </el-form>
         <div class="register-link">
@@ -41,51 +40,65 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
-import router from "@/router";
+import { ref, reactive } from 'vue';
+import { ElMessage } from 'element-plus';
+import router from '@/router';
+import { useAuthStore } from '@/stores/auth'; // 使用 Pinia 的 Auth Store
+import { User, Lock, View, Hide } from '@element-plus/icons-vue';
+import api from '@/api'; // 引入 API 模块
+import { md5 } from 'js-md5';
 
-const data = reactive({
-  form: {
-    username: "",
-    password: "",
-    role:'ADMIN'
-  }
+const { setToken } = useAuthStore(); // 使用 Pinia Store
+
+const formRef = ref();
+const form = reactive({
+  username: '',
+  password: '',
 });
 
 const rules = reactive({
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 });
 
-const formRef = ref();
+const passwordType = ref('password');
+const passwordIcon = ref(Hide);
 
-const login = () => {
-  formRef.value.validate((valid) => {
-    if (valid) {
-      request.post('/login', data.form).then(res => {
-        if (res.code === '200') {
-          localStorage.setItem('student-user', JSON.stringify(res.data));
-          ElMessage.success('登录成功');
-          router.push('/home'); //跳转主页
-        } else {
-          ElMessage.error(res.msg);
-        }
-      });
-    }
-  });
+const togglePasswordVisibility = () => {
+  if (passwordType.value === 'password') {
+    passwordType.value = 'text';
+    passwordIcon.value = View;
+  } else {
+    passwordType.value = 'password';
+    passwordIcon.value = Hide;
+  }
 };
+
+const handleSubmit = async() => {
+      const response = await api.login({
+        username: form.username,
+        password: md5(form.password),
+      });
+      const token = response.data.data; // 假设后端返回的 token 字段名为 token
+      setToken(token); // 设置 token 和解析身份
+      ElMessage.success(response.data.message);
+      router.push('/'); // 跳转到首页
+};
+
 </script>
 
 <style scoped>
 .login-container {
-  min-height: calc(100vh - 60px); /* Adjust height based on the navigation bar */
+  min-height: calc(100vh - 60px);
+  /* Adjust height based on the navigation bar */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-image: url(); /* Add a URL or remove if not needed */
-  margin-top: 60px; /* Height of the navigation bar */
+  background-image: url();
+  /* Add a URL or remove if not needed */
+  margin-top: 60px;
+  /* Height of the navigation bar */
 }
 
 .login-box {
@@ -113,4 +126,3 @@ const login = () => {
   text-align: right;
 }
 </style>
->>>>>>> 841dd7bcb5f457f53ca1951d3b3d76c54f132c44
