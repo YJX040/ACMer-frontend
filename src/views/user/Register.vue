@@ -92,19 +92,6 @@ const togglePasswordVisibility = () => {
   }
 };
 
-const passwordType = ref('password');
-const passwordIcon = ref(Hide);
-
-const togglePasswordVisibility = () => {
-  if (passwordType.value === 'password') {
-    passwordType.value = 'text';
-    passwordIcon.value = View;
-  } else {
-    passwordType.value = 'password';
-    passwordIcon.value = Hide;
-  }
-};
-
 const register = async() => {
       if (data.form.password !== data.form.confirmPassword) {
         ElMessage.error('两次输入的密码不一致');
