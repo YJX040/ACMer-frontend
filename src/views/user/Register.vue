@@ -7,21 +7,18 @@
           <el-form-item prop="username">
             <el-input v-model="data.form.username" placeholder="请输入账号">
               <template #prefix>
-                <el-icon class="el-input__icon"><User /></el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="email">
-            <el-input  v-model="data.form.email" placeholder="请输入电子邮件">
-              <template #prefix>
-                <el-icon class="el-input__icon"><Message /></el-icon>
+                <el-icon class="el-input__icon">
+                  <User />
+                </el-icon>
               </template>
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input :type="passwordType" v-model="data.form.password" placeholder="请输入密码">
               <template #prefix>
-                <el-icon class="el-input__icon"><Lock /></el-icon>
+                <el-icon class="el-input__icon">
+                  <Lock />
+                </el-icon>
               </template>
               <template #suffix>
                 <el-icon class="el-input__icon" @click="togglePasswordVisibility">
@@ -33,7 +30,9 @@
           <el-form-item prop="confirmPassword">
             <el-input :type="passwordType" v-model="data.form.confirmPassword" placeholder="请确认密码">
               <template #prefix>
-                <el-icon class="el-input__icon"><Lock /></el-icon>
+                <el-icon class="el-input__icon">
+                  <Lock />
+                </el-icon>
               </template>
               <template #suffix>
                 <el-icon class="el-input__icon" @click="togglePasswordVisibility">
@@ -41,12 +40,6 @@
                 </el-icon>
               </template>
             </el-input>
-          </el-form-item>
-          <el-form-item prop="role">
-            <el-select v-model="data.form.role" placeholder="请选择角色">
-              <el-option label="管理员" value="ADMIN"></el-option>
-              <el-option label="学生" value="STUDENT"></el-option>
-            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" class="register-button" @click="register">注册</el-button>
@@ -64,16 +57,16 @@
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import router from "@/router";
-import { User, Lock, View, Hide ,Message} from '@element-plus/icons-vue';
-import request from '@/utils/request'; // 请确保引入了用于发送请求的工具函数
-
+import { User, Lock, View, Hide } from '@element-plus/icons-vue';
+import api from "@/api";
+import { useAuthStore } from "@/stores/auth";
+import { md5 } from 'js-md5'; 
+const authStore = useAuthStore();
 const data = reactive({
   form: {
     username: "",
-    email: "",
     password: "",
     confirmPassword: "",
-    role: "STUDENT"
   }
 });
 
@@ -82,7 +75,6 @@ const rules = reactive({
   email: [{ required: true, message: '请输入电子邮件', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   confirmPassword: [{ required: true, message: '请确认密码', trigger: 'blur' }],
-  role: [{ required: true, message: '请选择角色', trigger: 'change' }]
 });
 
 const formRef = ref();
@@ -100,23 +92,32 @@ const togglePasswordVisibility = () => {
   }
 };
 
-const register = () => {
-  formRef.value.validate((valid) => {
-    if (valid) {
+const passwordType = ref('password');
+const passwordIcon = ref(Hide);
+
+const togglePasswordVisibility = () => {
+  if (passwordType.value === 'password') {
+    passwordType.value = 'text';
+    passwordIcon.value = View;
+  } else {
+    passwordType.value = 'password';
+    passwordIcon.value = Hide;
+  }
+};
+
+const register = async() => {
       if (data.form.password !== data.form.confirmPassword) {
         ElMessage.error('两次输入的密码不一致');
         return;
       }
-      request.post('/register', data.form).then(res => {
-        if (res.code === '200') {
-          ElMessage.success('注册成功');
-          router.push('/login'); // 跳转
-        } else {
-          ElMessage.error(res.msg);
-        }
+      const res = await api.register({
+        username: data.form.username,
+        password: md5(data.form.password),
+        rePassword: md5(data.form.confirmPassword),
       });
-    }
-  });
+      ElMessage.success(res.data.message);
+      authStore.setToken(res.data.data);
+      router.push('/');
 };
 </script>
 

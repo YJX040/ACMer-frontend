@@ -22,11 +22,11 @@
         </el-icon>
         <span>比赛</span>
       </el-menu-item>
-      <el-menu-item index="cfUser" @click="goto('/cf/user')">
+      <el-menu-item index="cfproblem" @click="goto('/cf/problem')">
         <el-icon>
           <Avatar />
         </el-icon>
-        <span>Codeforces 用户</span>
+        <span>题目列表</span>
       </el-menu-item>
       <el-menu-item index="rank" @click="goto('/cf/rank')">
         <el-icon>
@@ -36,11 +36,11 @@
       </el-menu-item>
     </el-sub-menu>
 
-    <el-menu-item index="user-total" @click="goto('/user')">
+    <el-menu-item index="user-total" @click="goto('/userlist')">
       <el-icon>
         <UserFilled />
       </el-icon>
-      <template #title>用户</template>
+      <template #title>用户概览</template>
     </el-menu-item>
 
     <!-- 训练 -->
@@ -50,10 +50,32 @@
       </el-icon>
       <template #title>训练</template>
     </el-menu-item>
+    <!-- 管理 -->
+    <el-sub-menu index="admin" v-if="authStore.isGuest &&authStore.isAdmin">
+      <template #title>
+        <el-icon>
+          <Admin />
+        </el-icon>
+        <span @click="goto('/admin')">管理</span>
+      </template>
+      <el-menu-item index="amdinuser" @click="goto('/admin/user')">
+        <el-icon>
+          <AdminUser />
+        </el-icon>
+        <span>用户管理</span>
+      </el-menu-item>
+      <el-menu-item index="adminproblem" @click="goto('/admin/problem')">
+        <el-icon>
+          <AdminProblem />  
+        </el-icon>
+        <span>题目管理</span>
+      </el-menu-item>
+    </el-sub-menu>
+
     <!-- 底部 -->
     <div class="flex-grow"></div>
     <!-- 用户 -->
-    <el-menu-item v-if="!isLoggedin" index="login" @click="goto('/login')">
+    <el-menu-item v-if="authStore.isGuest" index="login" @click="goto('/login')">
       <el-icon><LoginIcon /></el-icon>
       <template #title>登录</template>
     </el-menu-item>
@@ -65,11 +87,10 @@
     </el-menu-item>
 
     <!-- 登出按钮 -->
-    <el-menu-item v-if="isLoggedin" index="logout" @click="confirmLogout">
+    <el-menu-item v-if="!authStore.isGuest" index="logout" @click="confirmLogout">
       <el-icon><LogoutIcon/></el-icon>
       <template #title>登出</template>
     </el-menu-item>
-
 
     <el-menu-item @click="toggleCollapse" class="collapse-button">
       <el-icon v-if="isCollapse">
@@ -84,17 +105,22 @@
 </template>
 
 <script setup>
-import { Loginstore } from '@/stores/login';
-import { ref , onMounted} from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { computed, defineEmits } from 'vue';
-import { Location, HomeFilled, DArrowLeft, DArrowRight, Histogram, EditPen, Avatar, TrendCharts, List, UserFilled, WarnTriangleFilled,CloseBold  } from '@element-plus/icons-vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import LogoutIcon from '@/components/icon/LogoutIcon.vue';
 import LoginIcon from '@/components/icon/LoginIcon.vue';
 import ContestIcon from '@/components/icon/ContestIcon.vue';
 import FoldIcon from '@/components/icon/FoldIcon.vue';
-import ExpandIcon  from '@/components/icon/ExpandIcon.vue';
-const store = Loginstore();
+import ExpandIcon from '@/components/icon/ExpandIcon.vue';
+import Admin from '@/components/icon/Admin.vue';
+import AdminUser from '@/components/icon/AdminUser.vue';
+import AdminProblem from '@/components/icon/AdminProblem.vue';
+import { HomeFilled, Histogram, Avatar, TrendCharts, List, UserFilled } from '@element-plus/icons-vue';
+
+const authStore = useAuthStore();
 const router = useRouter();
 const isCollapse = ref(false);
 
@@ -117,39 +143,29 @@ const goto = (path) => {
   router.push(path);
 };
 
-// 确认登出方法
 const confirmLogout = () => {
   ElMessageBox.confirm('确定要登出吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    // 用户点击确定按钮后执行登出操作
     logout();
   }).catch(() => {
-    // 用户点击取消按钮时的操作
+    // 取消操作
   });
 };
 
 const logout = () => {
-  store.logout(); // 调用 Pinia Store 中的登出方法
-  localStorage.setItem('isLoggedIn', 'false'); // 将登录状态保存到 localStorage
+  authStore.logout();
   ElMessage.success('登出成功');
-  router.push('/'); // 跳转到登录页
+  router.push('/');
 };
 
-// 从 Pinia Store 中获取登录状态
-const isLoggedin = computed(() => store.islogin);
 
-// 在页面加载时从 localStorage 恢复登录状态
 onMounted(() => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn');
-  if (isLoggedIn === 'true') {
-    store.login(); // 更新 Pinia Store 中的登录状态为 true
-  } else {
-    store.logout(); // 可选：确保状态一致性，如果 localStorage 中没有登录状态，强制登出
-  }
+  // 页面加载时处理逻辑，如果需要
 });
+
 </script>
 
 <style scoped>

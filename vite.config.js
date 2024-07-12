@@ -1,5 +1,5 @@
-import { fileURLToPath, URL } from 'node:url'
-
+import { fileURLToPath } from 'node:url'
+import { URL } from 'url';
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -24,13 +24,15 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  // server: {
-  //   proxy: {
-  //     '/api': {
-  //       target: '',
-  //       changeOrigin: true,
-  //       rewrite: (path) => path.replace(/^\/api/, '')
-  //     }
-  //   }
-  // }
+  server: {
+    port: 8888,
+    proxy: {
+      '/api': {
+        target: 'http://10.12.1.29:8888',
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, ''),
+        logLevel: 'debug' // 设置日志级别为 debug
+      }
+    }
+  }
 })

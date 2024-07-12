@@ -34,7 +34,10 @@ const getBreadcrumbLabel = (path) => {
     'cf/user': 'Codeforces 用户',
     'cf/rank': '排名',
     train: '训练',
-    user: '用户'
+    user: '用户',
+    admin: '管理员',
+    'admin/user': '用户管理',
+    'admin/problem': '题目管理'
   }
   return labels[path] || path
 }

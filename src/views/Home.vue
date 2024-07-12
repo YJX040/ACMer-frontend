@@ -7,6 +7,10 @@
                         <span>近七天提交数</span>
                     </template>
                     <div>{{ recentSubmissions }}</div>
+                    
+                    <template>
+                        <div ref="echartsRef" style="width: 600px; height: 400px;"></div>
+                    </template>
                 </el-card>
                 <el-card>
                     <template v-slot:header>
@@ -63,32 +67,18 @@
                     <template v-slot:header>
                         <span>已结束的比赛</span>
                     </template>
-                    <div>{{ pastContests }}</div>
-                    <div class="CardBody">
-                        <el-table :data="pastContests" style="width: 100%">
-                            <el-table-column prop="name" label="比赛名称" width="180" />
-                            <el-table-column prop="date" label="时间" width="180" />
-                            <el-table-column prop="address" label="比赛人数" />
-                        </el-table>
-                    </div>
+                    <List :columns="pastContestColumns" :tableData="pastContests" />
                 </el-card>
                 <el-card>
                     <template v-slot:header>
                         <span>即将到来的比赛</span>
                     </template>
-                    <div>{{ upcomingContests }}</div>
-                    <div class="CardBody">
-                        <el-table :data="upcomingContests" style="width: 100%">
-                            <el-table-column prop="name" label="比赛名称" width="180" />
-                            <el-table-column prop="date" label="开始时间" width="180" />
-                            <el-table-column prop="address" label="结束时间" />
-                        </el-table>
-                    </div>
+                    <List :columns="upcomingContestColumns" :tableData="upcomingContests" />
                 </el-card>
             </el-col>
             <el-col :span="8">
                 <!-- 个人信息展示框 -->
-                <el-card v-if="isLoggedin" class="user-info">
+                <el-card v-if="!authStore.isGuest" class="user-info">
                     <template v-slot:header>
                         <span>个人信息</span>
                     </template>
@@ -118,13 +108,7 @@
                     <template v-slot:header>
                         <span>Codeforce展示</span>
                     </template>
-                    <div>{{ cfData }}</div>
-                    <div class="CardBody">
-                        <el-table :data="cfData" style="width: 100%">
-                            <el-table-column prop="name" label="用户名" />
-                            <el-table-column prop="date" label="分数" />
-                        </el-table>
-                    </div>
+                    <List :columns="cfColumns" :tableData="cfData" />
                 </el-card>
             </el-col>
         </el-row>
@@ -134,15 +118,12 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Loginstore } from '@/stores/login';
+import { useAuthStore } from '@/stores/auth'; // 导入 auth store
 
-const store = Loginstore();
+const authStore = useAuthStore(); // 初始化 auth store 实例
 const router = useRouter();
 
-const isLoggedin = computed(() => {
-    // 这里根据实际情况修改为从 Pinia Store 获取登录状态
-    return store.islogin;
-});
+// 在页面加载时从 Pinia Store 恢复登录状态
 
 const goto = (path) => {
     router.push(path);
@@ -157,7 +138,7 @@ const userInfo = ref({
 // 模拟获取用户信息的方法，实际应根据登录状态从后端获取
 const fetchUserInfo = () => {
     // 这里根据实际情况修改为从后端获取用户信息
-    if (store.islogin) {
+    if (!authStore.isGuest) {
         userInfo.value.username = 'John Doe';
         userInfo.value.email = 'john.doe@example.com';
         userInfo.value.points = 1000;
@@ -170,6 +151,39 @@ const fetchUserInfo = () => {
 };
 
 fetchUserInfo(); // 页面加载时获取一次用户信息
+
+
+const recentSubmissions = ref('');
+const intelligentTraining = ref('');
+const pastContests = ref([
+  { name: '比赛A', date: '2024/7/1 08:00:00', participants: 10 },
+  { name: '比赛B', date: '2024/7/2 08:00:00', participants: 20 },
+]);
+const upcomingContests = ref([
+  { name: '比赛1', date: '2024/7/7 08:00:00', address: '地点1' },
+  { name: '比赛2', date: '2024/7/8 08:00:00', address: '地点2' },
+]);
+const cfData = ref([
+  { name: '用户1', score: '2701' },
+  { name: '用户2', score: '2201' },
+]);
+
+const pastContestColumns = ref([
+  { prop: 'name', label: '比赛名称', width: 180 },
+  { prop: 'date', label: '时间', width: 180 },
+  { prop: 'participants', label: '比赛人数' },
+]);
+
+const upcomingContestColumns = ref([
+  { prop: 'name', label: '比赛名称', width: 180 },
+  { prop: 'date', label: '开始时间', width: 180 },
+  { prop: 'address', label: '结束时间' },
+]);
+
+const cfColumns = ref([
+  { prop: 'name', label: '用户名', width: 180 },
+  { prop: 'score', label: '分数' },
+]);
 </script>
 
 <style scoped>

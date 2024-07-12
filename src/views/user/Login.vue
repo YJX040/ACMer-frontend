@@ -7,33 +7,25 @@
           <el-form-item prop="username">
             <el-input v-model="form.username" placeholder="请输入账号">
               <template #prefix>
-                <el-icon class="el-input__icon"><User /></el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input 
-              :type="passwordType" 
-              v-model="form.password" 
-              placeholder="请输入密码">
-              <template #prefix>
-                <el-icon class="el-input__icon"><Lock /></el-icon>
-              </template>
-              <template #suffix>
-                <el-icon 
-                  class="el-input__icon" 
-                  @click="togglePasswordVisibility">
-                  <component :is="passwordIcon" />
+                <el-icon class="el-input__icon">
+                  <User />
                 </el-icon>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="role">
-            <el-select style="width: 100%" v-model="form.role">
-              <el-option value="ADMIN" label="管理员">
-              </el-option>
-              <el-option value="STUDENT" label="学生"></el-option>
-            </el-select>
+          <el-form-item prop="password">
+            <el-input :type="passwordType" v-model="form.password" placeholder="请输入密码">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <Lock />
+                </el-icon>
+              </template>
+              <template #suffix>
+                <el-icon class="el-input__icon" @click="togglePasswordVisibility">
+                  <component :is="passwordIcon" />
+                </el-icon>
+              </template>
+            </el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" class="login-button" @click="handleSubmit">登录</el-button>
@@ -51,28 +43,23 @@
 import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import router from '@/router';
-import { Loginstore } from '@/stores/login'; // 引入 Pinia Store
+import { useAuthStore } from '@/stores/auth'; // 使用 Pinia 的 Auth Store
 import { User, Lock, View, Hide } from '@element-plus/icons-vue';
+import api from '@/api'; // 引入 API 模块
+import { md5 } from 'js-md5';
 
-const store = Loginstore(); // 使用 Pinia Store
+const { setToken } = useAuthStore(); // 使用 Pinia Store
 
 const formRef = ref();
 const form = reactive({
   username: '',
   password: '',
-  role: 'ADMIN'
 });
 
 const rules = reactive({
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 });
-
-const initialState = {
-  username: '',
-  password: '',
-  role: 'ADMIN'
-};
 
 const passwordType = ref('password');
 const passwordIcon = ref(Hide);
@@ -87,31 +74,31 @@ const togglePasswordVisibility = () => {
   }
 };
 
-const handleSubmit = () => {
-  formRef.value.validate((valid) => {
-    if (valid) {
-      // 模拟登录成功，实际项目中请替换为实际的登录请求
-      const userData = { username: form.username, role: form.role };
-      store.login(); // 调用 Pinia Store 中的登录方法
-      localStorage.setItem('isLoggedIn', 'true'); // 将登录状态保存到 localStorage
-      ElMessage.success('登录成功');
+const handleSubmit = async() => {
+      const response = await api.login({
+        username: form.username,
+        password: md5(form.password),
+      });
+      const token = response.data.data; // 假设后端返回的 token 字段名为 token
+      setToken(token); // 设置 token 和解析身份
+      ElMessage.success(response.data.message);
       router.push('/'); // 跳转到首页
-    } else {
-      ElMessage.error('请输入正确的账号和密码');
-    }
-  });
 };
+
 </script>
 
 <style scoped>
 .login-container {
-  min-height: calc(100vh - 60px); /* Adjust height based on the navigation bar */
+  min-height: calc(100vh - 60px);
+  /* Adjust height based on the navigation bar */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-image: url(); /* Add a URL or remove if not needed */
-  margin-top: 60px; /* Height of the navigation bar */
+  background-image: url();
+  /* Add a URL or remove if not needed */
+  margin-top: 60px;
+  /* Height of the navigation bar */
 }
 
 .login-box {
