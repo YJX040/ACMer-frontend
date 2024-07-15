@@ -58,7 +58,7 @@ import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import router from "@/router";
 import { User, Lock, View, Hide } from '@element-plus/icons-vue';
-import api from "@/api";
+import api from "@/api/user";
 import { useAuthStore } from "@/stores/auth";
 import { md5 } from 'js-md5'; 
 const authStore = useAuthStore();
@@ -72,7 +72,6 @@ const data = reactive({
 
 const rules = reactive({
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-  email: [{ required: true, message: '请输入电子邮件', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   confirmPassword: [{ required: true, message: '请确认密码', trigger: 'blur' }],
 });

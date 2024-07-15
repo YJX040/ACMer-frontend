@@ -60,22 +60,26 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import router from '@/router';
-import api from '@/api';
-
+import userApi from '@/api/user';
+import contestApi from '@/api/contest';
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
 const questionCount = ref(0);
 const userCount = ref(0);
 const weeklyUserQuestions = ref([]);
 
 const fetchData = async () => {
+  const params = {
+    pageNum: 1,
+    pageSize: 20
+  };
   try {
-    const questionRes = await api.getQuestionCount();
-    questionCount.value = questionRes.data.count;
-
-    const userRes = await api.getUserCount();
-    userCount.value = userRes.data.count;
-
-    const weeklyRes = await api.getWeeklyUserQuestions();
-    weeklyUserQuestions.value = weeklyRes.data;
+    const responseQuestion = await contestApi.listContest(params);
+    questionCount.value = responseQuestion.data.data.total;
+    const responseUser = await userApi.getUserList(params);
+    userCount.value = responseUser.data.data.total;
+    // const weeklyRes = await api.getWeeklyUserQuestions();
+    // weeklyUserQuestions.value = weeklyRes.data;
   } catch (error) {
     ElMessage.error('数据获取失败');
   }

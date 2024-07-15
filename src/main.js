@@ -7,7 +7,6 @@ import './assets/main.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia'; // 导入 Pinia 的 createPinia 方法
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'; // 导入 pinia-plugin-persistedstate 插件
-
 import App from './App.vue';
 import router from './router/index.js';
 import ElementPlus from 'element-plus';
@@ -30,8 +29,7 @@ app.use(ElementPlus);
 router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
     if (to.meta.requiresAuth) {
-        const token = authStore.getToekn;
-        if (!token) {
+        if (!authStore.isAdmin) {
             next({ name: '404' });
         } else {
             next();

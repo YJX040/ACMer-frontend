@@ -1,44 +1,84 @@
 <template>
-    <div>
-      <List :columns="columns" :tableData="tableData" />
-    </div>
-  </template>
-  
-  <script setup>
-  import { computed } from 'vue';
-  import List from '@/components/List.vue';
-  
-  const columns = computed(() => [
-    { prop: 'name', label: '比赛名', sortable: true },
-    { prop: 'startTime', label: '开始时间', sortable: true },
-    { prop: 'endTime', label: '结束时间', sortable: true },
-    { prop: 'totalParticipants', label: '总人数', sortable: true },
-    { prop: 'totalQuestions', label: '累计解题数量', sortable: true },
-    { prop: 'totalPoints', label: '累计题目分数', sortable: true },
-    { prop: 'status', label: '比赛状态', sortable: false, slot: 'statusSlot' },
-  ]);
-  
-  const tableData = computed(() => [
-    { name: '2024ACM队员周训练-27', startTime: '2024/7/8 08:00:00', endTime: '2024/7/14 22:00:00', totalParticipants: 17, totalQuestions: 39, totalPoints: 41400, status: '进行中' },
-    { name: '2024ACM队员周训练-26', startTime: '2024/7/1 08:00:00', endTime: '2024/7/7 22:00:00', totalParticipants: 25, totalQuestions: 187, totalPoints: 176600, status: '已结束' },
-    { name: '2024ACM队员周训练-25', startTime: '2024/6/24 08:00:00', endTime: '2024/6/30 22:00:00', totalParticipants: 1, totalQuestions: 3, totalPoints: 2600, status: '已结束' },
-    { name: '2024ACM队员周训练-24', startTime: '2024/6/17 08:00:00', endTime: '2024/6/23 22:00:00', totalParticipants: 1, totalQuestions: 1, totalPoints: 800, status: '已结束' },
-    { name: '2024ACM队员周训练-23', startTime: '2024/6/10 08:00:00', endTime: '2024/6/16 22:00:00', totalParticipants: 9, totalQuestions: 24, totalPoints: 26100, status: '已结束' },
-    { name: '2024ACM队员周训练-22', startTime: '2024/6/3 08:00:00', endTime: '2024/6/9 22:00:00', totalParticipants: 21, totalQuestions: 68, totalPoints: 70000, status: '已结束' },
-    { name: '2024ACM队员周训练-21', startTime: '2024/5/27 08:00:00', endTime: '2024/6/2 22:00:00', totalParticipants: 19, totalQuestions: 66, totalPoints: 67100, status: '已结束' },
-    { name: '2024ACM队员周训练-20', startTime: '2024/5/20 08:00:00', endTime: '2024/5/26 22:00:00', totalParticipants: 9, totalQuestions: 41, totalPoints: 38800, status: '已结束' },
-    { name: '2024ACM队员周训练-19', startTime: '2024/5/13 08:00:00', endTime: '2024/5/19 22:00:00', totalParticipants: 13, totalQuestions: 58, totalPoints: 53700, status: '已结束' },
-    { name: '2024ACM队员周训练-18', startTime: '2024/5/6 08:00:00', endTime: '2024/5/12 22:00:00', totalParticipants: 19, totalQuestions: 50, totalPoints: 47800, status: '已结束' },
-    { name: '2024ACM队员周训练-17', startTime: '2024/4/29 08:00:00', endTime: '2024/5/5 22:00:00', totalParticipants: 13, totalQuestions: 50, totalPoints: 40700, status: '已结束' }
-  ]);
-  
-  const statusSlot = {
-    template: `<div>
-                <el-button type="primary" v-if="scope.row.status === '进行中'">题目</el-button>
-                <el-button type="info" v-else>榜单</el-button>
-                <el-button type="success" v-else>记录</el-button>
-                <el-button type="warning" v-else>加入</el-button>
-               </div>`
-  };
-  </script>
-  
+  <div>
+    <!-- 输入参数生成题目 -->
+    <el-input v-model="problemSetsCount" type="number" placeholder="生成题目的套数" />
+    <el-button type="primary" @click="generateProblemSets">生成题目</el-button>
+
+    <!-- 题目集列表 -->
+    <el-table :data="authStore.getProblemSets" style="width: 100%" @row-click="showProblemDetails">
+      <el-table-column prop="index" label="问题索引" />
+      <!-- A 到 J 的表头列 -->
+      <el-table-column v-for="(column, index) in columns" :key="index" :label="column.label">
+        <template #default="{ row }">
+          <div class="cell-content">{{ row.problems[index]?.name }}</div>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { ElMessage } from 'element-plus';
+import trainApi from '@/api/train';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
+const problemSetsCount = ref();
+const authStore = useAuthStore();
+const router = useRouter();
+
+// A-J 列表头
+const columns = [
+  { label: 'A' },
+  { label: 'B' },
+  { label: 'C' },
+  { label: 'D' },
+  { label: 'E' },
+  { label: 'F' },
+  { label: 'G' },
+  { label: 'H' },
+  { label: 'I' },
+  { label: 'J' }
+];
+
+// 生成题目集
+const generateProblemSets = async () => {
+  try {
+    if (!problemSetsCount.value) {
+      ElMessage.warning('请输入生成题目的套数');
+      return;
+    }
+    const response = await trainApi.trainList({
+      setNum: problemSetsCount.value
+    });
+    if (response.data.code === 20021) {
+      const data = response.data.data.map((set, index) => ({
+        index: index + 1,
+        problems: set.problems
+      }));
+      authStore.setProblemSets(data); // 更新题目集数据
+      ElMessage.success(response.data.message);
+    } else {
+      ElMessage.error(response.data.message);
+    }
+  } catch (error) {
+    ElMessage.error('获取数据失败');
+  }
+};
+
+// 显示题目详情
+const showProblemDetails = (row) => {
+  console.log('row:', row);
+  router.push(`/train/problem${row.index}`);
+};
+</script>
+
+<style scoped>
+.cell-content {
+  max-height: 60px; /* 设置最大高度 */
+  overflow: hidden; /* 超出部分隐藏 */
+  text-overflow: ellipsis; /* 显示省略号 */
+  white-space: nowrap; /* 不换行 */
+}
+</style>

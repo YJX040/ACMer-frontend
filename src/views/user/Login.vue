@@ -45,7 +45,7 @@ import { ElMessage } from 'element-plus';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth'; // 使用 Pinia 的 Auth Store
 import { User, Lock, View, Hide } from '@element-plus/icons-vue';
-import api from '@/api'; // 引入 API 模块
+import api from '@/api/user'; // 引入 API 模块
 import { md5 } from 'js-md5';
 
 const { setToken } = useAuthStore(); // 使用 Pinia Store
@@ -79,7 +79,8 @@ const handleSubmit = async() => {
         username: form.username,
         password: md5(form.password),
       });
-      const token = response.data.data; // 假设后端返回的 token 字段名为 token
+      const token = response.data.data; 
+      console.log('token:', token);
       setToken(token); // 设置 token 和解析身份
       ElMessage.success(response.data.message);
       router.push('/'); // 跳转到首页

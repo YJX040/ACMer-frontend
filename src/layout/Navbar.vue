@@ -1,5 +1,6 @@
 <template>
-  <el-menu default-active="home" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen" @close="handleClose">
+  <el-menu default-active="home" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
+    @close="handleClose">
     <!-- 主页 -->
     <el-menu-item index="home" @click="goto('/')">
       <el-icon>
@@ -51,7 +52,7 @@
       <template #title>训练</template>
     </el-menu-item>
     <!-- 管理 -->
-    <el-sub-menu index="admin" v-if="authStore.isGuest &&authStore.isAdmin">
+    <el-sub-menu index="admin" v-if="!authStore.isGuest && authStore.isAdmin">
       <template #title>
         <el-icon>
           <Admin />
@@ -64,19 +65,21 @@
         </el-icon>
         <span>用户管理</span>
       </el-menu-item>
-      <el-menu-item index="adminproblem" @click="goto('/admin/problem')">
+      <!-- <el-menu-item index="adminproblem" @click="goto('/admin/problem')">
         <el-icon>
-          <AdminProblem />  
+          <AdminProblem />
         </el-icon>
         <span>题目管理</span>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-sub-menu>
 
     <!-- 底部 -->
     <div class="flex-grow"></div>
     <!-- 用户 -->
     <el-menu-item v-if="authStore.isGuest" index="login" @click="goto('/login')">
-      <el-icon><LoginIcon /></el-icon>
+      <el-icon>
+        <LoginIcon />
+      </el-icon>
       <template #title>登录</template>
     </el-menu-item>
     <el-menu-item v-else index="user" @click="goto('/user')">
@@ -88,7 +91,9 @@
 
     <!-- 登出按钮 -->
     <el-menu-item v-if="!authStore.isGuest" index="logout" @click="confirmLogout">
-      <el-icon><LogoutIcon/></el-icon>
+      <el-icon>
+        <LogoutIcon />
+      </el-icon>
       <template #title>登出</template>
     </el-menu-item>
 
@@ -163,7 +168,7 @@ const logout = () => {
 
 
 onMounted(() => {
-  // 页面加载时处理逻辑，如果需要
+  // 页面加载时处理逻辑
 });
 
 </script>

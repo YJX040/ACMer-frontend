@@ -15,6 +15,9 @@ import AdminProblem from '@/views/admin/AdminProblem.vue'
 import AddProblem from '@/views/admin/AddProblem.vue'
 import AddUser from '@/views/admin/AddUser.vue'
 import NotFound from '@/views/404.vue'
+import Account from '@/views/user/ShowAccount.vue'
+import ProblemDetail from '@/components/ProblemDetail.vue'
+import UserDetails from '@/components/UserDetails.vue'
 
 const routes = [
   {
@@ -116,6 +119,23 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: '404',
     component: NotFound,
+  },
+  {
+    path: '/account',
+    name: 'account',
+    component: Account,
+  },
+  {
+    path: '/train/problem:id',
+    name: 'problem',
+    component: ProblemDetail,
+    props: true,
+  },
+  {
+    path: '/user/:id',
+    name: 'userdetails',
+    component: UserDetails,
+    props: true,
   }
 ]
 

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Home>
-    </Home>
+    <Index>
+    </Index>
   </div>
 </template>
 
 <script setup>
-import Home from './layout/index.vue'
+import Index from './layout/index.vue'
 import { RouterView } from 'vue-router'
 </script>
 

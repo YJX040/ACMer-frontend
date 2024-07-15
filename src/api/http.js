@@ -10,9 +10,8 @@ const http = axios.create({
 http.interceptors.request.use(
     config => {
         const authStore = useAuthStore();
-        if (authStore.token) {
-            config.headers.Authorization = `Bearer ${authStore.token}`;
-        }
+        config.headers.Authorization = authStore.getToken;
+        // console.log('config:', config); 
         return config;
     },
     error => {
@@ -23,28 +22,34 @@ http.interceptors.request.use(
 
 http.interceptors.response.use(
     response => {
+        // 检查响应是否包含数据
+        console.log('response:', response);
+        if (!response || !response.data) {
+            throw new Error('Empty response or missing data');
+        }
         const { code, message, token } = response.data;
         if (code === 20021) {
             if (token) {
                 const authStore = useAuthStore();
                 authStore.token = token; // 存储 token 到 Pinia
-                //解析token
                 authStore.setToken(token);
             }
             return response;
-        }else if (code === 20046) {
+        } else if (code === 20046) {
             ElMessage.error(message); // 使用 ElMessage 进行错误提示
+            const authStore = useAuthStore();
             authStore.logout(); // 登出
             return Promise.reject(new Error(message || '请求失败'));
-        } 
-        else {
+        } else {
             ElMessage.error(message || '请求失败'); // 使用 ElMessage 进行错误提示
             return Promise.reject(new Error(message || '请求失败'));
         }
     },
     error => {
+        // 处理请求错误
         const response = error.response;
-        const message = response.data.message;
+        const message = response && response.data ? response.data.message : error.message;
+        
         if (response && response.status === 401) {
             ElMessage.error('请先登录'); // 使用 ElMessage 进行错误提示
         } else {

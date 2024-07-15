@@ -1,4 +1,3 @@
-// src/stores/auth.js
 
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
@@ -13,49 +12,64 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => auth.value === IDENTIFICATION.ADMIN);
   const isUser = computed(() => auth.value === IDENTIFICATION.USER);
   const isGuest = computed(() => auth.value === IDENTIFICATION.GUSET);
-  // const initialToken = localStorage.getItem('authToken') || '';
   const token = ref('');
-  const auth = ref(IDENTIFICATION.GUSET); // 默认设置为普通用户
+  const auth = ref(IDENTIFICATION.GUSET); 
   const userId = ref(null);
   const username = ref('');
+  const problemSets= ref([]);
+  const problemCount = ref(0);
+  const userCount = ref(0);
 
   const setToken = (newToken) => {
     token.value = newToken;
     try {
       const decoded = jwtDecode(newToken);
-      // 根据解析结果设置身份
       auth.value = decoded.claims.auth;
       userId.value = decoded.claims.id;
       username.value = decoded.claims.username;
+      console.log("is admin:", isAdmin.value);
     } catch (error) {
       console.error("Token解析失败:", error);
-      auth.value = IDENTIFICATION.USER; // 解析失败时，默认设置为普通用户身份
+      auth.value = IDENTIFICATION.USER;
       userId.value = null;
       username.value = '';
-      // localStorage.removeItem('authToken'); // 移除无效的 token
-      token.value = ''; // 清空当前的 token
+      token.value = ''; 
     }
   };
 
   const logout = () => {
-    // localStorage.removeItem('authToken');
-    token.value = ''; // 在登出时显式设为空字符串
+    token.value = ''; 
     auth.value = IDENTIFICATION.GUSET;
     userId.value = null;
     username.value = '';
   };
 
 
-  // // 添加浏览器关闭事件的处理
-  // window.addEventListener('beforeunload', (event) => {
-  //   // 防止触发刷新时的自动登出
-  //   if (event.currentTarget.performance.navigation.type !== 1) {
-  //     logout(); // 执行登出操作
-  //   }
-  // });
 
   const getToken = computed(() => token.value);
 
+  const setProblemSets = (newProblemSets) => {
+    problemSets.value = newProblemSets;
+  }
+
+  const getProblemSets = computed(() => problemSets.value);
+
+  const getProblemSet = (id) => {
+    return problemSets.value.find((problemSet) => problemSet.id === id);
+  }
+  
+  const clearProblemSets = () => {
+    problemSets.value = [];
+  }
+  const setProblemCount = (newProblemCount) => {
+    problemCount.value = newProblemCount;
+  }
+  const getProblemCount = computed(() => problemCount.value);
+
+const setUserCount = (newUserCount) => {
+    userCount.value = newUserCount;
+  }
+  const getUserCount = computed(() => userCount.value);
   return {
     token,
     auth,
@@ -65,7 +79,15 @@ export const useAuthStore = defineStore('auth', () => {
     setToken,
     logout,
     IDENTIFICATION,
-    getToken
+    getToken,
+    setProblemSets,
+    getProblemSets,
+    clearProblemSets,
+    getProblemSet,
+    setProblemCount,
+    getProblemCount,
+    setUserCount,
+    getUserCount,
   };
 }, {
   persist: {

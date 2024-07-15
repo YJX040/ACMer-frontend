@@ -16,7 +16,7 @@
   import { ref, onMounted } from 'vue';
   import { ElMessage } from 'element-plus';
   import router from '@/router';
-  import api from '@/api';
+  import api from '@/api/user';
   import List from '@/components/List.vue';
   
   const columns = [

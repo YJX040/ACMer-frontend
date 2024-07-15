@@ -15,7 +15,7 @@
           <span>Codeforces 导航</span>
         </template>
         <div class="nav-links">
-          <el-button type="primary" @click="navigateTo('/cf/user')">CF用户</el-button>
+          <el-button type="primary" @click="navigateTo('/cf/problem')">CF题目</el-button>
           <el-button type="success" @click="navigateTo('/cf/contest')">比赛</el-button>
           <el-button type="info" @click="navigateTo('/cf/rank')">排名</el-button>
         </div>

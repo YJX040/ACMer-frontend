@@ -14,45 +14,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import contestApi from '@/api/contest';
-import CustomTag from '@/components/CustomTag.vue';
-
-// 格式化时间戳
-const formatTime = (row, column, cellValue) => {
-  if (!cellValue) return '';
-  const date = new Date(cellValue * 1000);
-  return date.toLocaleString();
-};
-
-// 格式化持续时间
-const formatDuration = (row, column, cellValue) => {
-  if (!cellValue) return '';
-   // 负数，显示为多少天后
-   if (cellValue < 0) {
-    const days = Math.abs(Math.floor(cellValue / (24 * 3600)));
-    return `${days}天后`;
-  }
-  // 小于一小时，显示分钟数
-  if (cellValue < 3600) {
-    const minutes = Math.floor(cellValue / 60);
-    return `${minutes}分钟前`;
-  }
-
-  // 小于一天，显示小时数
-  if (cellValue < 86400) {
-    const hours = Math.floor(cellValue / 3600);
-    return `${hours}小时前`;
-  }
-
-  // 大于365天，显示年数
-  if (cellValue > 365 * 24 * 3600) {
-    const years = Math.floor(cellValue / (365 * 24 * 3600));
-    return `${years}年前`;
-  }
-
-  // 其他情况显示天数
-  const days = Math.floor(cellValue / (24 * 3600));
-  return `${days}天`;
-};
+import { formatTime,formatDuration } from '@/utils/timeUtils'; // 导入时间格式化函数
 
 // 定义表格列
 const columns = [
