@@ -72,22 +72,6 @@ const props = defineProps({
     }
 })
 
-// const props = {
-//     account: {
-//         mainAccount: {
-//             handle: 'Main Account',
-//         },
-//         subAccount: [
-//             {
-//                 handle: 'Sub Account 1',
-//             },
-//             {
-//                 handle: 'Sub Account 2',
-//             }
-//         ]
-//     }
-// }
-
 const emit = defineEmits(['add:account', 'remove:account', 'set:main']);
 
 const mainAccount = computed(() => props.account.mainAccount);

@@ -28,8 +28,8 @@ export default defineConfig({
     port: 8888,
     proxy: {
       '/api': {
-        target: 'http://10.12.1.29:8888',
-        // target: 'http://acmer.leezekee.top',
+        // target: 'http://10.12.1.29:8888',
+        target: 'http://acmer.leezekee.top',
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, ''),
         logLevel: 'debug' // 设置日志级别为 debug

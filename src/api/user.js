@@ -27,6 +27,12 @@ const api = {
     },
     getUserInfoById(params) {
         return get(`/user/info/${params}`);
+    },
+    getRanting(params) {
+        return get('/user/rating/contests', params);
+    },
+    getUserRating(params) {
+        return get(`/user/rating/contests/${params}`, params);
     }
 };
 

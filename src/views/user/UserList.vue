@@ -1,10 +1,10 @@
 <template>
-    <el-input v-model="searchClass" style="width: 200px" placeholder="查询班级" />
+    <!-- <el-input v-model="searchClass" style="width: 200px" placeholder="查询班级" />
     <el-button type="primary" @click="searchData('class')" style="margin:0 10px">查询</el-button>
     <el-input v-model="searchName" style="width: 200px" placeholder="查询姓名" />
     <el-button type="primary" @click="searchData('name')" style="margin:0 10px">查询</el-button>
     <el-input v-model="searchUsername" style="width: 200px" placeholder="查询用户名" />
-    <el-button type="primary" @click="searchData('username')" style="margin:0 10px">查询</el-button>
+    <el-button type="primary" @click="searchData('username')" style="margin:0 10px">查询</el-button> -->
   
     <List :columns="columns" :tableData="tableData" :showSearch="true" :showCheckbox="true" @row-click="handleRowClick"/>
     <CustomPagination

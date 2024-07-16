@@ -105,7 +105,7 @@
       </div>
     </el-card>
 
-    <el-card class="user-history-card">
+    <!-- <el-card class="user-history-card">
       <template v-slot:header>
         <span>历史记录</span>
       </template>
@@ -116,6 +116,19 @@
           <el-table-column prop="description" label="描述" />
         </el-table>
       </div>
+    </el-card> -->
+
+    <el-card class="user-history-card">
+      <h2>学生整体表现趋势</h2>
+       <LineChart
+      :xAxisData="['Week 1', 'Week 2', 'Week 3', 'Week 4']"
+      :legendData="['总提交数', '总通过数', '平均通过率']"
+      :seriesData="[
+        { name: '总提交数', type: 'line', data: [0, 120, 150, 130] },
+        { name: '总通过数', type: 'line', data: [70, 90, 110, 100] },
+        { name: '平均通过率', type: 'line', yAxisIndex: 1, data: [70, 75, 73, 77] }
+      ]"
+    />
     </el-card>
   </div>
 </template>
@@ -127,7 +140,8 @@ import AccountSection from '@/views/user/ShowAccount.vue';
 import { ElMessage } from 'element-plus';
 import { md5 } from 'js-md5';
 import { View, Hide } from '@element-plus/icons-vue';
-
+import * as echarts from 'echarts';
+import LineChart from '@/components/LineChart.vue';
 
 const userInfo = reactive({
   id: 0,

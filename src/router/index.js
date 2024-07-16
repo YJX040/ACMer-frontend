@@ -11,7 +11,7 @@ import CF from '@/views/cf/CF.vue'
 import UserList from '@/views/user/UserList.vue'
 import Admin from '@/views/admin/Admin.vue'
 import AdminUser from '@/views/admin/AdminUser.vue'
-import AdminProblem from '@/views/admin/AdminProblem.vue'
+import AdminCFUser from '@/views/admin/AdminCFUser.vue'
 import AddProblem from '@/views/admin/AddProblem.vue'
 import AddUser from '@/views/admin/AddUser.vue'
 import NotFound from '@/views/404.vue'
@@ -92,9 +92,9 @@ const routes = [
     }
   },
   {
-    path: '/admin/problem',
+    path: '/admin/cfuser',
     name: 'adminproblem',
-    component: AdminProblem,
+    component: AdminCFUser,
     meta: {
       requiresAuth: true,
     }

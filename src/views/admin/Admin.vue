@@ -25,34 +25,13 @@
         <el-card>
           <template #header>
             <div class="clearfix">
-              <span>新增题目</span>
+              <span>数据更新</span>
             </div>
           </template>
-          <el-button type="primary" @click="addQuestion">新增题目</el-button>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card>
-          <template #header>
-            <div class="clearfix">
-              <span>新增用户</span>
-            </div>
-          </template>
-          <el-button type="primary" @click="addUser">新增用户</el-button>
+          <el-button type="primary" @click="updateData">数据更新</el-button>
         </el-card>
       </el-col>
     </el-row>
-    <el-card>
-      <template #header>
-        <div class="clearfix">
-          <span>每周用户做题数</span>
-        </div>
-      </template>
-      <el-table :data="weeklyUserQuestions">
-        <el-table-column prop="week" label="周"></el-table-column>
-        <el-table-column prop="questionCount" label="做题数"></el-table-column>
-      </el-table>
-    </el-card>
   </div>
 </template>
 
@@ -60,40 +39,41 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import router from '@/router';
+import adminApi from '@/api/admin';
 import userApi from '@/api/user';
 import contestApi from '@/api/contest';
 import { useAuthStore } from '@/stores/auth';
 const authStore = useAuthStore();
 const questionCount = ref(0);
 const userCount = ref(0);
-const weeklyUserQuestions = ref([]);
 
-const fetchData = async () => {
-  const params = {
-    pageNum: 1,
-    pageSize: 20
-  };
+const updateData = async () => {
   try {
-    const responseQuestion = await contestApi.listContest(params);
-    questionCount.value = responseQuestion.data.data.total;
-    const responseUser = await userApi.getUserList(params);
-    userCount.value = responseUser.data.data.total;
-    // const weeklyRes = await api.getWeeklyUserQuestions();
-    // weeklyUserQuestions.value = weeklyRes.data;
+    await adminApi.updateData();
+    ElMessage.success('数据更新成功');
   } catch (error) {
-    ElMessage.error('数据获取失败');
+    ElMessage.error('数据更新失败');
   }
 };
 
-const addQuestion = () => {
-  router.push('/admin/addproblem');
+// 加载数据
+const loadData = async () => {
+  const params = {
+    pageNum: 1,
+    pageSize: 10,
+  };
+  try {
+    const responseUser = await userApi.getUserList(params);
+    userCount.value = responseUser.data.data.total;
+    const responseProblem = await contestApi.listProblem(params);
+    questionCount.value = responseProblem.data.data.total;
+    // ElMessage.success('获取数据成功');
+  } catch (error) {
+    ElMessage.error('获取数据失败');
+  }
 };
 
-const addUser = () => {
-  router.push('/admin/adduser');
-};
-
-onMounted(fetchData);
+onMounted(loadData);
 </script>
 
 <style scoped>

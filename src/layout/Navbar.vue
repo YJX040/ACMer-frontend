@@ -65,12 +65,12 @@
         </el-icon>
         <span>用户管理</span>
       </el-menu-item>
-      <!-- <el-menu-item index="adminproblem" @click="goto('/admin/problem')">
+      <el-menu-item index="adminproblem" @click="goto('/admin/cfuser')">
         <el-icon>
           <AdminProblem />
         </el-icon>
-        <span>题目管理</span>
-      </el-menu-item> -->
+        <span>CF账户管理</span>
+      </el-menu-item>
     </el-sub-menu>
 
     <!-- 底部 -->

@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- 输入参数生成题目 -->
-    <el-input v-model="problemSetsCount" type="number" placeholder="生成题目的套数" />
-    <el-button type="primary" @click="generateProblemSets">生成题目</el-button>
+    <el-input v-model="problemSetsCount" style="width: 200px" type="number" placeholder="生成题目的套数" />
+    <el-button type="primary" style="margin-left:10px" @click="generateProblemSets">生成题目</el-button>
 
     <!-- 题目集列表 -->
     <el-table :data="authStore.getProblemSets" style="width: 100%" @row-click="showProblemDetails">
