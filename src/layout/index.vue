@@ -8,7 +8,7 @@
         <el-header>
           <Bread></Bread>
         </el-header>
-        <el-main>
+        <el-main class="main">
           <RouterView></RouterView>
         </el-main>
       </div>
@@ -41,6 +41,7 @@ const sidebarWidth = computed(() => (isCollapsed.value ? '60px' : '200px'))
 .sidebar {
   height: 100vh !important;
   transition: width 0.3s;
+  overflow-x: hidden;
 }
 
 .header {
@@ -54,6 +55,10 @@ const sidebarWidth = computed(() => (isCollapsed.value ? '60px' : '200px'))
 .main-content {
   flex: 1;
   padding: 20px;
+}
+
+.main {
+  height: calc(100% - 60px);
 }
 
 .breadcrumb {

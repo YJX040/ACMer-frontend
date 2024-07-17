@@ -12,3 +12,36 @@
 body {
     overflow: hidden;
 }
+/* 滚动槽 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.06);
+    -webkit-box-shadow: inset 0 0 5px rgba(130, 122, 122, 0.08);
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.12);
+    -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+a{
+    text-decoration: none;
+    color: #73b8ff;
+}
+
+a:visited{
+    color: #73b8ff;
+    text-decoration: none;
+}
+
+a:hover{
+    /* color: #409eff; */
+    opacity: 0.6;
+}

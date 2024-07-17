@@ -4,7 +4,8 @@ import { useAuthStore } from '@/stores/auth'; // 导入 Pinia 的 Auth Store
 
 const http = axios.create({
     baseURL: '/api',
-    timeout: 5000,
+    // baseURL: 'https://acmer.leezekee.top/api',
+    timeout: 10000,
 });
 
 http.interceptors.request.use(

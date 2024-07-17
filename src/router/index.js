@@ -12,13 +12,11 @@ import UserList from '@/views/user/UserList.vue'
 import Admin from '@/views/admin/Admin.vue'
 import AdminUser from '@/views/admin/AdminUser.vue'
 import AdminCFUser from '@/views/admin/AdminCFUser.vue'
-import AddProblem from '@/views/admin/AddProblem.vue'
-import AddUser from '@/views/admin/AddUser.vue'
 import NotFound from '@/views/404.vue'
 import Account from '@/views/user/ShowAccount.vue'
 import ProblemDetail from '@/components/ProblemDetail.vue'
 import UserDetails from '@/components/UserDetails.vue'
-
+import AdminUserDetail from '@/views/admin/AdminUserDetail.vue'
 const routes = [
   {
     path: '/',
@@ -84,7 +82,7 @@ const routes = [
     }
   },
   {
-    path: '/admin/user',
+    path: '/admin/useradmin',
     name: 'adminuser',
     component: AdminUser,
     meta: {
@@ -92,33 +90,12 @@ const routes = [
     }
   },
   {
-    path: '/admin/cfuser',
+    path: '/admin/cfuseradmin',
     name: 'adminproblem',
     component: AdminCFUser,
     meta: {
       requiresAuth: true,
     }
-  },
-  {
-    path: '/admin/addproblem',
-    name: 'addproblem',
-    component: AddProblem,
-    meta: {
-      requiresAuth: true,
-    }
-  },
-  {
-    path: '/admin/adduser',
-    name: 'adduser',
-    component: AddUser,
-    meta: {
-      requiresAuth: true,
-    }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    name: '404',
-    component: NotFound,
   },
   {
     path: '/account',
@@ -132,10 +109,26 @@ const routes = [
     props: true,
   },
   {
-    path: '/user/:id',
+    path: '/userlist/:id',
     name: 'userdetails',
     component: UserDetails,
     props: true,
+  },
+  {
+    path: '/admin/user/:id',
+    name: 'adminuserdetails',
+    component: AdminUserDetail,
+  },
+  {
+    path: '/404',
+    name: '404component',
+    component: NotFound,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404',
+    component: NotFound,
+    redirect: '/404',
   }
 ]
 

@@ -17,6 +17,7 @@ const api = {
         return post('/user/cf/add', params);
     },
     deleteSubAccount(params) {
+        // console.log(pt);
         return del('/user/cf/delete', params);
     },
     setMainAccount(params) {
@@ -28,11 +29,20 @@ const api = {
     getUserInfoById(params) {
         return get(`/user/info/${params}`);
     },
-    getRanting(params) {
+    getRating(params) {
         return get('/user/rating/contests', params);
     },
     getUserRating(params) {
-        return get(`/user/rating/contests/${params}`, params);
+        return get(`/user/rating/contests/${params}`);
+    },
+    getWeeklyData(params) {
+        return get('/user/submissions/weekly', params);
+    },
+    getUserSubmissions(params) {
+        return get('/user/submission', params);
+    },
+    getUserSubmissionsById(params) {
+        return get(`/user/submission/${params.id}`, params);
     }
 };
 

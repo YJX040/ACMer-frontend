@@ -2,13 +2,10 @@
   <el-input v-model="input" style="width: 200px" placeholder="查询比赛名称" />
   <el-button type="primary" style="margin-left:10px" @click="load">查询</el-button>
   <div>
-    <List :columns="columns" :tableData="tableData" @sort-change="handleSortChange" @filter-change="handleFilterChange" />
-    <CustomPagination
-      :current-page="currentPage"
-      :total="total"
-      :page-size="pageSize"
-      @update:currentPage="handleCurrentChange"
-    />
+    <List :columns="columns" :tableData="tableData" @sort-change="handleSortChange"
+      @filter-change="handleFilterChange" />
+    <CustomPagination :current-page="currentPage" :total="total" :page-size="pageSize"
+      @update:currentPage="handleCurrentChange" />
   </div>
 </template>
 
@@ -16,19 +13,20 @@
 import { ref, onMounted } from 'vue';
 import contestApi from '@/api/contest';
 import List from '@/components/List.vue';
-import CustomTag from '@/components/CustomTag.vue'; 
+import CustomTag from '@/components/CustomTag.vue';
 import CustomPagination from '@/components/CustomPagination.vue';
 import { useAuthStore } from '@/stores/auth';
+import { ElMessage } from 'element-plus';
 
 const authStore = useAuthStore();
 
 // 定义表格列
 const columns = [
   { prop: 'id', label: '比赛ID', sortable: true, columnKey: 'id', width: '100px' },
-  { prop: 'name', label: '比赛名称', width: '200px' },
-  { prop: 'startTimeSeconds', label: '开始时间', width: '200px' },
-  { prop: 'durationSeconds', label: '持续时间', width: '200px' },
-  { prop: 'relativeTimeSeconds', label: '相对时间', width: '200px' },
+  { prop: 'name', label: '比赛名称', minwidth: '200px' },
+  { prop: 'startTimeSeconds', label: '开始时间',sortable: true, columnKey: 'startTimeSeconds', minwidth: '150px' },
+  { prop: 'durationSeconds', label: '持续时间', width: '100px' },
+  { prop: 'relativeTimeSeconds', label: '相对时间', sortable: true, columnKey: 'relativeTimeSeconds', minwidth: '100px' },
   {
     prop: 'phase', label: '阶段', width: '100px',
     filters: [
@@ -44,7 +42,7 @@ const columns = [
 // 定义响应式数据
 const tableData = ref([]);
 const currentPage = ref(1);
-const pageSize = ref(10);
+const pageSize = ref(15);
 const total = ref(0);
 const input = ref('');
 const selectedPhase = ref(''); // 新增的响应式数据
@@ -68,6 +66,7 @@ const fetchTableData = async () => {
       tableData.value = response.data.data.items || [];
       total.value = response.data.data.total || 0;
       authStore.setProblemCount(response.data.data.total);
+      // ElMessage.success('获取表格数据成功');
     } else {
       console.error('无效的响应数据:', response);
     }
@@ -101,6 +100,9 @@ const handleFilterChange = (filters) => {
 
 // 处理排序变化
 const handleSortChange = ({ prop, order }) => {
+  if(prop==='startTimeSeconds') prop='start_time_seconds';
+  else if(prop==='durationSeconds') prop='duration_seconds';
+  else if(prop==='relativeTimeSeconds') prop='relative_time_seconds';
   sortProp.value = prop;
   sortOrder.value = order === 'ascending' ? 'asc' : (order === 'descending' ? 'desc' : '');
   fetchTableData();
@@ -118,5 +120,4 @@ const load = () => {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

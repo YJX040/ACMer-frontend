@@ -38,7 +38,6 @@
                 <el-input v-else v-model="userInfo.clazz" :disabled="!isEditing" size="small" class="no-border-input" />
               </div>
             </div>
-            <!-- 奖项信息 -->
             <div class="user-info-item">
               <div class="info-label">奖项:</div>
               <div class="info-value">
@@ -85,63 +84,60 @@
                 </el-input>
               </div>
             </div>
-            <div class="button-section">
-              <!-- <el-button v-show="isEditing" @click="addSubAccount">添加子账号</el-button> -->
-              <el-button v-show="!isEditing" @click="isEditing = true">修改信息</el-button>
-              <el-button v-show="isEditing" type="primary" @click="saveAll">保存</el-button>
-              <el-button v-show="!isCoding" @click="isCoding = true">修改密码</el-button>
-              <el-button v-show="isCoding" type="primary" @click="changeCode">保存密码</el-button>
-              <el-button v-show="isCoding" @click="isCoding = false">取消修改密码</el-button>
-            </div>
           </div>
           <div class="account-section">
-            <AccountSection :account="userInfo.cfAccount"
-              @add:account="addCfSubAccount" 
-              @remove:account="deleteSubAccount" 
-              @set:main="setMainAccount"
-               />
+            <AccountSection :account="userInfo.cfAccount" @add:account="addCfSubAccount"
+              @remove:account="deleteSubAccount" @set:main="setMainAccount" />
           </div>
+        </div>
+        <div class="button-section">
+          <el-button v-show="!isEditing" @click="isEditing = true">修改信息</el-button>
+          <el-button v-show="isEditing" type="primary" @click="saveAll">保存</el-button>
+          <el-button v-show="!isCoding" @click="isCoding = true">修改密码</el-button>
+          <el-button v-show="isCoding" type="primary" @click="changeCode">保存密码</el-button>
+          <el-button v-show="isCoding" @click="isCoding = false">取消修改密码</el-button>
         </div>
       </div>
     </el-card>
 
-    <!-- <el-card class="user-history-card">
-      <template v-slot:header>
-        <span>历史记录</span>
-      </template>
-      <div class="CardBody">
-        <el-table :data="historyData" style="width: 100%">
-          <el-table-column prop="action" label="操作" />
-          <el-table-column prop="time" label="时间" />
-          <el-table-column prop="description" label="描述" />
-        </el-table>
-      </div>
-    </el-card> -->
+    <el-card class="user-history-card">
+      <h2>整体表现趋势</h2>
+      <LineChart :xAxisData="xAxisData" :legendData="legendData" :seriesData="seriesData" />
+    </el-card>
 
     <el-card class="user-history-card">
-      <h2>学生整体表现趋势</h2>
-       <LineChart
-      :xAxisData="['Week 1', 'Week 2', 'Week 3', 'Week 4']"
-      :legendData="['总提交数', '总通过数', '平均通过率']"
-      :seriesData="[
-        { name: '总提交数', type: 'line', data: [0, 120, 150, 130] },
-        { name: '总通过数', type: 'line', data: [70, 90, 110, 100] },
-        { name: '平均通过率', type: 'line', yAxisIndex: 1, data: [70, 75, 73, 77] }
-      ]"
-    />
+      <h2>提交情况</h2>
+      <List :columns="columns" :tableData="tableData" :showSearch="true" :showCheckbox="true" />
+
+      <CustomPagination :current-page="currentPage" :total="total" :page-size="pageSize"
+        @update:currentPage="handleCurrentChange" />
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import userApi from '@/api/user';
 import AccountSection from '@/views/user/ShowAccount.vue';
 import { ElMessage } from 'element-plus';
 import { md5 } from 'js-md5';
 import { View, Hide } from '@element-plus/icons-vue';
-import * as echarts from 'echarts';
 import LineChart from '@/components/LineChart.vue';
+import List from '@/components/List.vue';
+import CustomPagination from '@/components/CustomPagination.vue';
+
+// 定义表格列
+const columns = [
+  { prop: 'contestId', label: '比赛ID', sortable: true, columnKey: 'contestId', width: '100px' },
+  { prop: 'creationTimeSeconds', label: '提交时间', minwidth: '120px' },
+  { prop: 'problemId', label: '题目ID', minwidth: '80px' },
+  { prop: 'handle', label: '提交账户', minwidth: '80px' },
+  { prop: 'accountType', label: '账户类型', minwidth: '80px' },
+  { prop: 'participantType', label: '参与类型', minwidth: '80px' },
+  { prop: 'programmingLanguage', label: '编程语言', minwidth: '140px' },
+  { prop: 'verdict', label: '判定结果', minwidth: '150px' },
+  // { prop: 'passedTestCount', label: '通过数', width: '80px' },
+];
 
 const userInfo = reactive({
   id: 0,
@@ -158,17 +154,15 @@ const userInfo = reactive({
     mainAccount: { handle: '' },
     subAccount: [],
   },
+  history: [] 
 });
-
-const historyData = reactive([
-  { action: '登录', time: '2024-07-10 08:00:00', description: '用户登录系统' },
-  { action: '提交题解', time: '2024-07-10 09:00:00', description: '提交了题目 #123 的解答' },
-  { action: '参加比赛', time: '2024-07-09 14:00:00', description: '参加了Codeforces比赛' },
-]);
 
 const isEditing = ref(false);
 const isCoding = ref(false);
-
+const tableData = ref([]);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
 const passwordType = ref('password');
 const passwordIcon = ref(Hide);
 
@@ -184,6 +178,7 @@ const togglePasswordVisibility = () => {
     passwordIcon.value = Hide;
   }
 };
+
 const toggleConfirmPasswordVisibility = () => {
   if (confirmPasswordType.value === 'password') {
     confirmPasswordType.value = 'text';
@@ -212,6 +207,12 @@ const changeCode = async () => {
   if (userInfo.password !== userInfo.rePassword) {
     ElMessage.error('两次输入的密码不一致');
     return;
+  }else if(userInfo.password===''||userInfo.rePassword===''){
+    ElMessage.error('密码为空')
+    return ;
+  }else if(userInfo.password.length < 6){
+    ElMessage.error('密码长度不能小于6位');
+    return;
   }
   const response = await userApi.changeUserInfo({
     username: userInfo.username,
@@ -222,49 +223,49 @@ const changeCode = async () => {
     award: userInfo.award,
     password: md5(md5(userInfo.password)),
   });
-  // console.log('修改密码响应:', response.data);
   ElMessage.success('修改密码成功');
   isCoding.value = false;
 };
 
-const setMainAccount = async () => {
-  // console.log('Set main account:', userInfo.cfAccount.mainAccount.handle);
-  const response = await userApi.setMainAccount({
-    handle: userInfo.cfAccount.mainAccount.username,
+const setMainAccount = (handle) => {
+  ElMessageBox.confirm(`确定要设置为主账号吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () =>{
+      const response = await userApi.setMainAccount({
+      handle,
+    });
+    ElMessage.success(response.data.message);
+    updateInfo();
+  }).catch(() => {
+    // 用户取消，不进行任何操作
   });
-  ElMessage.success(response.data.message);
 };
 
 const addCfSubAccount = async (account) => {
-  // console.log('Add sub account:', account.handle);
+  const handle = trim(account);
   const response = await userApi.addSubAccount({
-    handle: account,
+    handle,
   });
   ElMessage.success(response.data.message);
   //重新刷新
   updateInfo();
 };
 
-// const saveSubAccount = (account) => {
-//   addCfSubAccount(account);
-// };
-
 const delSub = async (account) => {
-  console.log('Delete sub account:', account.handle);
   const response = await userApi.deleteSubAccount({
-    cfUsername: account.handle,
+    cfUsername: account,
   });
+  updateInfo();
   ElMessage.success(response.data.message);
 };
 
 const deleteSubAccount = (account) => {
+  console.log('account:', account);
   delSub(account);
   userInfo.cfAccount.subAccount = userInfo.cfAccount.subAccount.filter(acc => acc !== account);
 };
-
-// const addSubAccount = () => {
-//   userInfo.cfAccount.subAccount.push({ handle: '' });
-// };
 
 const updateInfo = async () => {
   try {
@@ -281,15 +282,44 @@ const updateInfo = async () => {
     userInfo.cfAccount.subAccount = data.cfAccount.subAccount || [];
     userInfo.password = '';
     userInfo.cfRanking = data.cfRanking;
-    console.log('User info:', userInfo);
+    const responseRating = await userApi.getRating();
+    console.log('responseRating:', responseRating.data.data);
+    userInfo.history = responseRating.data.data || []; // 更新用户的历史数据
   } catch (error) {
-    console.error('Error fetching user info:', error);
+    // console.error('Error fetching user info:', error);
   }
+};
+const updateTableData = async () => {
+  const params = {
+    pageNum: currentPage.value,
+    pageSize: pageSize.value,
+  };
+  const response = await userApi.getUserSubmissions(params);
+  console.log('responsetable:', response.data.data);
+  tableData.value = response.data.data.items || [];
+  total.value = response.data.data.total || 0;
 };
 
 onMounted(() => {
   updateInfo();
+  updateTableData();
 });
+
+// const xAxisData = computed(() => userInfo.history.map(item => new Date(item.ratingUpdateTimeSeconds * 1000).toLocaleDateString()));
+const xAxisData = computed(() => userInfo.history.map(item => item.contestName));
+const seriesData = computed(() => [{
+  name: 'Rating',
+  type: 'line',
+  data: userInfo.history.map(item => item.newRating)
+}]);
+const legendData = computed(() => ['Rating']);
+
+// 处理当前页码变化
+const handleCurrentChange = (page) => {
+  currentPage.value = page;
+  updateTableData();
+};
+
 </script>
 
 <style scoped>
@@ -304,7 +334,8 @@ onMounted(() => {
 .user-info-card,
 .user-history-card {
   width: 100%;
-  max-width: 1000px;
+  /* max-width: 1000px; */
+
   margin-bottom: 20px;
   border-radius: 8px;
 }
@@ -313,11 +344,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  padding: 0 40px;
 }
 
 .basic-info-section,
 .account-section {
-  width: 50%;
+  width: 40%;
 }
 
 .user-info-item {
@@ -331,42 +363,10 @@ onMounted(() => {
   width: 100px;
 }
 
-.sub-account-section {
-  margin-top: 20px;
-}
-
-.sub-accounts {
-  max-height: 250px;
-  overflow-y: auto;
-}
-
-.sub-account-card {
-  margin-bottom: 10px;
-}
-
-.sub-account-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.sub-account-label {
-  font-weight: bold;
-  width: 120px;
-}
-
-.sub-account-value {
-  flex: 1;
-}
-
-.sub-account-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
 .button-section {
+
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 20px;
 }
 
@@ -390,5 +390,9 @@ onMounted(() => {
 
 .el-table-column {
   padding: 12px 0;
+}
+
+.user-history-card {
+  overflow-x: auto;
 }
 </style>

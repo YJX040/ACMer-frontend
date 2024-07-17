@@ -6,13 +6,9 @@
                     <template v-slot:header>
                         <span>近七天提交数</span>
                     </template>
-                    <div>{{ recentSubmissions }}</div>
-
-                    <template>
-                        <div ref="echartsRef" style="width: 600px; height: 400px;"></div>
-                    </template>
+                    <ColumnChart :chartData="weeklyData" style="height: 300px"></ColumnChart>
                 </el-card>
-                <el-card>
+                <el-card v-if="!authStore.isGuest" class="user-info">
                     <template v-slot:header>
                         <span>智能训练</span>
                     </template>
@@ -21,54 +17,37 @@
                         <div class="tranning-header">
                             <div class="tranning-datas">
                                 <div class="el-statistic">
-                                    <div class="el-statistic__head">开始时间</div>
+                                    <div class="el-statistic__head">用户</div>
                                     <div class="el-statistic__content">
-                                        <span class='el-statistic__number'>2024/7/1 08:00:00</span>
+                                        <span class='el-statistic__number'>{{ userInfo.username }}</span>
                                     </div>
                                 </div>
                                 <div class="el-statistic">
-                                    <div class="el-statistic__head">结束时间</div>
+                                    <div class="el-statistic__head">主账号</div>
                                     <div class="el-statistic__content">
-                                        <span class='el-statistic__number'>2024/7/1 08:00:00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tranning-body">
-                            <div class="statistics-container">
-                                <div class="el-statistic">
-                                    <div class="el-statistic__head">总参与人数</div>
-                                    <div class="el-statistic__content">
-                                        <span class='el-statistic__number'>19</span>
+                                        <span class='el-statistic__number'>{{ userInfo.cfAccount.mainAccount.handle
+                                            }}</span>
                                     </div>
                                 </div>
                                 <div class="el-statistic">
-                                    <div class="el-statistic__head">累计解题数量</div>
+                                    <div class="el-statistic__head">积分</div>
                                     <div class="el-statistic__content">
-                                        <span class='el-statistic__number'>19</span>
-                                    </div>
-                                </div>
-                                <div class="el-statistic">
-                                    <div class="el-statistic__head">累计解题分数</div>
-                                    <div class="el-statistic__content">
-                                        <span class='el-statistic__number'>19</span>
+                                        <span class='el-statistic__number'>{{ userInfo.cfRanking }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="tranning-footer">
-                            <el-button type="primary" disabled>榜单</el-button>
-                            <el-button type="success" disabled>记录</el-button>
-                            <el-button type="info" disabled>加入</el-button>
+                            <el-button type="primary" @click="goto('/train')">查看详情</el-button>
                         </div>
                     </div>
                 </el-card>
-                <el-card>
+                <el-card v-else class="user-info">
                     <template v-slot:header>
-                        <span>已结束的比赛</span>
+                        <span>智能训练</span>
                     </template>
-                    <List :columns="pastContestColumns" :tableData="pastContests"
-                        @row-click="handleRowClicktocontest" />
+                    <div class="CardBody">暂未登录
+                    </div>
                 </el-card>
                 <el-card>
                     <template v-slot:header>
@@ -77,6 +56,13 @@
                     <List :columns="upcomingContestColumns" :tableData="upcomingContests"
                         @row-click="handleRowClicktocontest" />
                 </el-card>
+                <el-card>
+                    <template v-slot:header>
+                        <span>已结束的比赛</span>
+                    </template>
+                    <List :columns="pastContestColumns" :tableData="pastContests"
+                        @row-click="handleRowClicktocontest" />
+                </el-card>            
             </el-col>
             <el-col :span="8">
                 <!-- 个人信息展示框 -->
@@ -103,16 +89,16 @@
                     <template v-slot:header>
                         <span>个人信息</span>
                     </template>
-                    <div class="CardBody">
+                    <div class="CardBody">未登录，点击
                         <a @click="goto('/login')">
-                            <span>未登录，点击登录</span>
+                            <span>登录</span>
                         </a>
                     </div>
                 </el-card>
                 <!-- Codeforces 展示 -->
                 <el-card>
                     <template v-slot:header>
-                        <span>Codeforce展示</span>
+                        <span>Codeforce已绑定账户排名</span>
                     </template>
                     <List :columns="cfColumns" :tableData="cfData" @row-click="handleRowClick" />
                 </el-card>
@@ -127,7 +113,10 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth'; // 导入 auth store
 import userApi from '@/api/user'; // 导入用户 API 模块
 import cfApi from '@/api/contest'; // 导入 Codeforces API 模块
-import { formatTime,formatDuration } from '@/utils/timeUtils'; // 导入时间格式化函数
+import { formatTime, formatDuration } from '@/utils/timeUtils'; // 导入时间格式化函数
+import ColumnChart from '@/components/ColumnChart.vue';
+import moment from 'moment';
+
 const authStore = useAuthStore(); // 初始化 auth store 实例
 const router = useRouter();
 
@@ -145,6 +134,11 @@ const userInfo = reactive({
     clazz: '',
     award: '',
     cfRanking: '',
+    cfAccount: {
+        mainAccount: { handle: '' },
+        subAccount: [],
+
+    },
 });
 
 // utils/timeUtils.js
@@ -160,6 +154,8 @@ const updateInfo = async () => {
         userInfo.clazz = data.clazz;
         userInfo.award = data.award; // 更新奖项信息
         userInfo.cfRanking = data.cfRanking; // 更新 Codeforces 排名信息
+        userInfo.cfAccount.mainAccount.handle = data.cfAccount.mainAccount.handle || '';
+        userInfo.cfAccount.subAccount = data.cfAccount.subAccount || [];
     } catch (error) {
         console.error('Error fetching user info:', error);
     }
@@ -182,8 +178,8 @@ const fetchUserInfo = () => {
 };
 
 const cfColumns = ref([
-    { prop: 'name', label: '用户名', width: 180 },
-    { prop: 'score', label: '分数' },
+    { prop: 'name', label: '用户名', minwidth: 180 },
+    { prop: 'score', label: '分数' ,width:120},
 ]);
 
 const cfData = ref([{
@@ -211,8 +207,6 @@ const updateCfData = async () => {
     }
 };
 
-
-const recentSubmissions = ref('');
 const intelligentTraining = ref('');
 
 
@@ -227,22 +221,22 @@ const pastContestColumns = ref([
     {
         prop: 'id',
         label: '比赛ID',
-        width: 180
+        width: 80
     },
-    { prop: 'name', label: '比赛名称', width: 180 },
-    { prop: 'startTimeSeconds', label: '时间', width: 180 , formatter:formatTime},
-    { prop: 'durationSeconds', label: '持续时间', formatter:formatDuration},
+    { prop: 'name', label: '比赛名称', minwidth: 200 },
+    { prop: 'startTimeSeconds', label: '时间', width: 200, formatter: formatTime },
+    { prop: 'durationSeconds', label: '持续时间',width: 120, formatter: formatDuration },
 ]);
 
 const upcomingContestColumns = ref([
     {
         prop: 'id',
         label: '比赛ID',
-        width: 180
+        width: 80
     },
-    { prop: 'name', label: '比赛名称', width: 180 },
-    { prop: 'startTimeSeconds', label: '开始时间', width: 180, formatter: formatTime },
-    { prop: 'durationSeconds', label: '持续时间', formatter: formatDuration },
+    { prop: 'name', label: '比赛名称', minwidth: 200 },
+    { prop: 'startTimeSeconds', label: '开始时间', width: 200, formatter: formatTime },
+    { prop: 'durationSeconds', label: '持续时间', width:120,formatter: formatDuration },
 ]);
 const updateUpcomingContests = async () => {
     const params = {
@@ -303,6 +297,26 @@ const handleRowClicktocontest = (row) => {
     window.open(url, '_blank');
 };
 
+
+const weeklyData = ref([]);
+
+const processWeeklyData = (data) => {
+    return data.map((item, index) => ({
+        ...item,
+        date: moment().subtract(6 - index, 'days').format('YYYY-MM-DD')
+    }));
+};
+
+const loadWeeklyData = async () => {
+    try {
+        const response = await userApi.getWeeklyData();
+        weeklyData.value = processWeeklyData(response.data.data);
+    } catch (error) {
+        console.error('获取每周数据失败', error);
+    }
+};
+
+loadWeeklyData();
 fetchUserInfo(); // 页面加载时获取一次用户信息
 updateCfData();
 updateUpcomingContests();
@@ -367,5 +381,32 @@ el-col {
     justify-content: center;
     align-items: center;
     height: 100px;
+}
+
+.login-link {
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+}
+
+.login-link::after {
+  content: '点击登录以继续';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(60, 208, 245, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.login-link:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 </style>

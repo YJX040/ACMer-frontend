@@ -1,8 +1,8 @@
 import { post,get ,put, del } from './http';
 
 const api = {
-    updateData(params) {
-        return post('/admin/updateData', params);
+    updateData() {
+        return post('/admin/test');
     },
     getUserList(params) {
         return get('/admin/list', params);

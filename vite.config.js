@@ -19,20 +19,26 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
+  esbuild:{
+    drop: ['debugger'], // 去除console.log和debugger
+    pure: ['console.log'], // 去除console.log
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   server: {
-    port: 8888,
+    port: 34567,
+    host: '0.0.0.0',
     proxy: {
       '/api': {
         // target: 'http://10.12.1.29:8888',
-        target: 'http://acmer.leezekee.top',
+        target: 'https://acmer.leezekee.top',
         changeOrigin: true,
+        secure: true,
         // rewrite: (path) => path.replace(/^\/api/, ''),
-        logLevel: 'debug' // 设置日志级别为 debug
+        // logLevel: 'debug' // 设置日志级别为 debug
       }
     }
   }

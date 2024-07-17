@@ -1,39 +1,37 @@
 <template>
-  <div>
-    <div class="login-container">
-      <div class="login-box">
-        <div class="login-title">登录</div>
-        <el-form ref="formRef" :model="form" :rules="rules" :initial-state="initialState">
-          <el-form-item prop="username">
-            <el-input v-model="form.username" placeholder="请输入账号">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <User />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input :type="passwordType" v-model="form.password" placeholder="请输入密码">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <Lock />
-                </el-icon>
-              </template>
-              <template #suffix>
-                <el-icon class="el-input__icon" @click="togglePasswordVisibility">
-                  <component :is="passwordIcon" />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" class="login-button" @click="handleSubmit">登录</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="register-link">
-          还没有账号？请 <router-link to="/register">注册</router-link>
-        </div>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-title">登录</div>
+      <el-form ref="formRef" :model="form" :rules="rules" :initial-state="initialState">
+        <el-form-item prop="username">
+          <el-input v-model="form.username" placeholder="请输入账号">
+            <template #prefix>
+              <el-icon class="el-input__icon">
+                <User />
+              </el-icon>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input :type="passwordType" v-model="form.password" placeholder="请输入密码">
+            <template #prefix>
+              <el-icon class="el-input__icon">
+                <Lock />
+              </el-icon>
+            </template>
+            <template #suffix>
+              <el-icon class="el-input__icon" @click="togglePasswordVisibility">
+                <component :is="passwordIcon" />
+              </el-icon>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" class="login-button" @click="handleSubmit">登录</el-button>
+        </el-form-item>
+      </el-form>
+      <div class="register-link">
+        还没有账号？请 <router-link to="/register">注册</router-link>
       </div>
     </div>
   </div>
@@ -90,16 +88,13 @@ const handleSubmit = async() => {
 
 <style scoped>
 .login-container {
-  min-height: calc(100vh - 60px);
+  height:100%;
   /* Adjust height based on the navigation bar */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  /* padding: 20px; */
   background-image: url();
-  /* Add a URL or remove if not needed */
-  margin-top: 60px;
-  /* Height of the navigation bar */
 }
 
 .login-box {

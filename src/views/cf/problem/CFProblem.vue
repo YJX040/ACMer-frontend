@@ -1,16 +1,32 @@
 <template>
-  <el-table :data="tableData" @row-click="handleRowClick">
-    <el-table-column
-      v-for="column in columns"
-      :key="column.prop"
-      :prop="column.prop"
-      :label="column.label"
-      :sortable="column.sortable"
-      :width="column.width"
-    >
+  <!-- <el-input v-model="input" style="width: 200px" placeholder="查询题目名称" />
+  <el-button type="primary" style="margin-left:10px" @click="fetchTableData">查询</el-button> -->
+  <el-table :data="tableData" @row-click="handleRowClick" @sort-change="handleSortChange">
+    <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label"
+      :sortable="column.sortable" :width="column.width">
       <template #default="scope">
         <template v-if="column.prop === 'tags'">
           <el-tag v-for="tag in scope.row.tags" :key="tag">{{ tag }}</el-tag>
+        </template>
+        <template v-else-if="column.prop === 'rating'">
+          <el-tag v-if="scope.row.rating >= 2400" type="danger">
+            {{ scope.row.rating }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.rating >= 2100" type="warning">
+            {{ scope.row.rating }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.rating >= 1800" type="success">
+            {{ scope.row.rating }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.rating >= 1200" type="primary">
+            {{ scope.row.rating }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.rating===undefined||scope.row.rating===''"  type="info">
+            {{ 0 }}
+          </el-tag>
+          <el-tag v-else type="info">
+            {{ scope.row.rating }}
+          </el-tag>
         </template>
         <template v-else>
           {{ scope.row[column.prop] }}
@@ -18,68 +34,78 @@
       </template>
     </el-table-column>
   </el-table>
-  <!-- <el-pagination
-    v-model:current-page="currentPage"
-    :total="total"
-    :page-size="pageSize"
-    layout="total,  prev, pager, next, jumper"
-    @current-change="handleCurrentChange"
-  /> -->
-  <CustomPagination
-    :current-page="currentPage"
-    :total="total"
-    :page-size="pageSize"
-    @update:currentPage="handleCurrentChange"
-  />
+  <CustomPagination :current-page="currentPage" :total="total" :page-size="pageSize"
+    @update:currentPage="handleCurrentChange" />
 </template>
 
-<!-- <template>
-  <div>
-    <List :columns="columns" :tableData="tableData" @row-click="handleRowClick" >
-      <template #tag="{ row }">
-        <el-tag v-for="tag in row.row.tags" :key="tag">{{ tag }}</el-tag>
-      </template>
-    </List>
-    <el-pagination v-model:current-page="currentPage" :total="total" :page-size="pageSize"
-      layout="total, prev, pager, next, jumper" @current-change="handleCurrentChange" />
-  </div>
-</template> -->
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import contestApi from '@/api/contest';
 import CustomPagination from '@/components/CustomPagination.vue';
+import { ElMessage } from 'element-plus';
 // 定义表格列
 const columns = [
   { prop: 'id', label: '题目ID', sortable: true, columnKey: 'id', width: '100px' },
-  { prop: 'contestId', label: '比赛ID', width: '100px' },
+  { prop: 'contestId', label: '比赛ID', sortable: true, columnKey: 'contestId', width: '100px' },
   { prop: 'index', label: '问题ID', width: '100px' },
-  { prop: 'name', label: '题目名称', width: '200px' },
-  { prop: 'type', label: '题目类型', width: '200px' },
-  { prop: 'rating', label: '题目难度', width: '100px' },
-  { prop: 'tags', label: '标签' }
+  { prop: 'name', label: '题目名称', minwidth: '200px' },
+  { prop: 'type', label: '题目类型', minwidth: '120px' },
+  { prop: 'rating', label: '题目难度', sortable: true, columnKey: 'rating', minwidth: '80px' },
+  { prop: 'tags', label: '标签', minwidth: "200px" }
 ];
 
 // 定义响应式数据
 const tableData = ref([]);
 const currentPage = ref(1);
-const pageSize = 10;
+const pageSize = 15;
 const total = ref(0);
+const sortProp = ref('');
+const sortOrder = ref('');
+const eachObj = {
+  id: -1,
+  contestId: -1,
+  index: '',
+  name: '',
+  type: '',
+  rating: -1,
+  tags:'',
+}
+
 
 // 获取表格数据
 const fetchTableData = async () => {
   const params = {
     pageNum: currentPage.value,
     pageSize: pageSize,
+    // ...(input.value ? { name: input.value } : {}),
+    ...(sortProp.value ? { orderBy: sortProp.value } : {}),
+    ...(sortOrder.value ? { order: sortOrder.value } : {}),
   };
   const response = await contestApi.listProblem(params);
   tableData.value = response.data.data.items;
+  // for (let i = 0; i < tableData.length; i++) {
+  //   for (const key in eachObj) {
+  //     if (key==='rating'){
+  //       if(tableData[i][key]===undefined||tableData[i][key]===null||)
+  //     }
+  //   }
+  // }
   total.value = response.data.data.total;
+  // ElMessage.success('获取题目列表成功');
 };
 
 // 处理当前页码变化
 const handleCurrentChange = (page) => {
   currentPage.value = page;
+  fetchTableData();
+};
+
+// 处理排序变化
+const handleSortChange = ({ prop, order }) => {
+  if (prop === 'contestId') prop = 'contest_id';
+  sortProp.value = prop;
+  sortOrder.value = order === 'ascending' ? 'asc' : (order === 'descending' ? 'desc' : '');
   fetchTableData();
 };
 
@@ -91,14 +117,6 @@ onMounted(() => {
 // 处理行点击事件
 const handleRowClick = (row) => {
   const url = `https://codeforces.com/contest/${row.contestId}/problem/${row.index}`;
-  // ElMessageBox.confirm(`确定要跳转到 比赛${row.contestId}${row.index}题 吗？`, '提示', {
-  //   confirmButtonText: '确定',
-  //   cancelButtonText: '取消',
-  //   type: 'warning',
-  // }).then(() => {
-    window.open(url, '_blank');
-  // }).catch(() => {
-  //   // 用户取消，不进行任何操作
-  // });
+  window.open(url, '_blank');
 };
 </script>

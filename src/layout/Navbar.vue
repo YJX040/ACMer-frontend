@@ -59,13 +59,13 @@
         </el-icon>
         <span @click="goto('/admin')">管理</span>
       </template>
-      <el-menu-item index="amdinuser" @click="goto('/admin/user')">
+      <el-menu-item index="amdinuser" @click="goto('/admin/useradmin')">
         <el-icon>
           <AdminUser />
         </el-icon>
         <span>用户管理</span>
       </el-menu-item>
-      <el-menu-item index="adminproblem" @click="goto('/admin/cfuser')">
+      <el-menu-item index="adminproblem" @click="goto('/admin/cfuseradmin')">
         <el-icon>
           <AdminProblem />
         </el-icon>
@@ -104,7 +104,7 @@
       <el-icon v-else>
         <FoldIcon></FoldIcon>
       </el-icon>
-      <template #title>伸缩</template>
+      <template #title>折叠</template>
     </el-menu-item>
   </el-menu>
 </template>
@@ -184,5 +184,6 @@ onMounted(() => {
   flex-direction: column;
   width: 100%;
   height: 100%;
+  overflow-x: hidden !important;
 }
 </style>

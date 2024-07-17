@@ -31,13 +31,16 @@ const getBreadcrumbLabel = (path) => {
     login: '登录',
     register: '注册',
     contest: '比赛',
-    'cf/user': 'Codeforces 用户',
-    'cf/rank': '排名',
+    rank: '排名',
+    problem: '题目',
     train: '训练',
     user: '用户',
+    userlist: '用户概览',
+    cf: 'Codeforces',
     admin: '管理员',
-    'admin/user': '用户管理',
-    'admin/problem': '题目管理'
+    cfuser: 'CF用户',
+    cfuseradmin: 'CF用户管理',
+    useradmin: '用户管理',
   }
   return labels[path] || path
 }

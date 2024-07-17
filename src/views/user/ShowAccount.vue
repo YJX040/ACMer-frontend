@@ -75,7 +75,7 @@ const props = defineProps({
 const emit = defineEmits(['add:account', 'remove:account', 'set:main']);
 
 const mainAccount = computed(() => props.account.mainAccount);
-const mainNull = computed(() => props.account.mainAccount === null || props.account.mainAccount === undefined);
+const mainNull = computed(() => props.account.mainAccount === null || props.account.mainAccount === undefined || props.account.mainAccount.handle === '');
 const subAccount = computed(() => props.account.subAccount);
 const subNull = computed(() => props.account.subAccount === null || props.account.subAccount === undefined || props.account.subAccount.length === 0);
 
@@ -93,7 +93,6 @@ const handleAccountClick = (handle, isMain) => {
 }
 
 const handleDelete = (handle) => {
-    // emit('remove:account', handle);
     tobeDel.value = handle;
     delVisible.value = true;
 }
@@ -139,14 +138,14 @@ const handleDelConfirm = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 400px;
-    border:#dfdede  solid 1px;
+    width: 100%;
+    border: #ecf5ff solid 1px;
     border-radius: 5px;
     padding: 0 0 5px 0;
 }
 
 .main-account {
-    border: #dfdede  solid 1px;
+    border: #ecf5ff solid 1px;
     border-radius: 5px;
     height: 100px;
     margin-bottom: 5px;
@@ -156,7 +155,7 @@ const handleDelConfirm = () => {
 .other-account {
     display: flex;
     flex-direction: column;
-    border: #dfdede  solid 1px;
+    border: #ecf5ff solid 1px;
     border-radius: 5px;
     min-height: 0;
     max-height: 300px;
@@ -183,12 +182,12 @@ const handleDelConfirm = () => {
     border-radius: 5px;
     font-size: 22px;
     cursor: pointer;
-    color: #3c3c3c ;
+    color: #159cfc;
 }
 
 .add-btn:hover {
     /* background-color: #c4f0c570; */
-    color: #dfdede ;
+    color: #dfdede;
 }
 
 
@@ -197,7 +196,6 @@ const handleDelConfirm = () => {
     flex-direction: column;
     gap: 4px;
 }
-
 /* 滚动槽 */
 ::-webkit-scrollbar {
     width: 3px;

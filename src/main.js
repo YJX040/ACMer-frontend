@@ -34,8 +34,9 @@ router.beforeEach((to, from, next) => {
         } else {
             next();
         }
+    } else {
+        next();
     }
-    next();
 });
 
 // 挂载应用到 #app 元素

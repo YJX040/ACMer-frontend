@@ -10,7 +10,7 @@
                 <span>{{ isMain ? "主账号" : "子账号" }}</span>
             </div>
         </div>
-        <div class="control" v-if="!isNull" @click="emit('delete', handle)">
+        <div class="control" v-if="!isNull" @click="handleDel">
             <span>-</span>
         </div>
         <div class="info" v-else>
@@ -50,6 +50,11 @@ const isLast = computed(() => props.isLast)
 const handleClick = () => {
     emit('click:acc', handle.value, isMain.value)
 }
+
+const handleDel = (e) => {
+    e.stopPropagation()
+    emit('delete', handle.value)
+}
 </script>
 
 <style scoped>
@@ -61,6 +66,8 @@ const handleClick = () => {
     padding-left: 50px;
     height: 100px;
     width: 100%;
+    background-color: #ecf5ff;
+    color:#43a0ff;
     /* border: #e5e5e52f solid 1px; */
     border-radius: 5px;
     font-size: 15px;
@@ -75,13 +82,19 @@ const handleClick = () => {
     width: 80%;
 }
 
+.main-wrapper{
+    opacity: 0.8;
+    background-color: #79bbff !important;
+    color: rgb(255, 255, 255) !important;
+}
+
 .main-wrapper:hover {
-    background-color: #b1b1b1 ;
-    color: white;
+    background-color: #ecf5ff ;
+    color: #43a0ff;
 }
 
 .sub-wrapper:hover {
-    background-color: #292828;
+    background-color: #79bbff;
     color: rgb(255, 255, 255);
 }
 

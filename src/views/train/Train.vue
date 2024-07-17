@@ -44,7 +44,6 @@ const columns = [
 
 // 生成题目集
 const generateProblemSets = async () => {
-  try {
     if (!problemSetsCount.value) {
       ElMessage.warning('请输入生成题目的套数');
       return;
@@ -62,9 +61,6 @@ const generateProblemSets = async () => {
     } else {
       ElMessage.error(response.data.message);
     }
-  } catch (error) {
-    ElMessage.error('获取数据失败');
-  }
 };
 
 // 显示题目详情
