@@ -46,9 +46,9 @@ import CustomPagination from '@/components/CustomPagination.vue';
 import { ElMessage } from 'element-plus';
 // 定义表格列
 const columns = [
-  { prop: 'id', label: '题目ID', sortable: true, columnKey: 'id', width: '100px' },
-  { prop: 'contestId', label: '比赛ID', sortable: true, columnKey: 'contestId', width: '100px' },
-  { prop: 'index', label: '问题ID', width: '100px' },
+  { prop: 'id', label: '题目ID', sortable: true, columnKey: 'id', minwidth: '100px' },
+  { prop: 'contestId', label: '比赛ID', sortable: true, columnKey: 'contestId', minwidth: '100px' },
+  { prop: 'index', label: '问题ID', minwidth: '100px' },
   { prop: 'name', label: '题目名称', minwidth: '200px' },
   { prop: 'type', label: '题目类型', minwidth: '120px' },
   { prop: 'rating', label: '题目难度', sortable: true, columnKey: 'rating', minwidth: '80px' },

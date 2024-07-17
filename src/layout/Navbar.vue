@@ -127,7 +127,7 @@ import { HomeFilled, Histogram, Avatar, TrendCharts, List, UserFilled } from '@e
 
 const authStore = useAuthStore();
 const router = useRouter();
-const isCollapse = ref(false);
+const isCollapse = ref(true);
 
 const emit = defineEmits(['collapse']);
 

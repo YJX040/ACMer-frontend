@@ -3,7 +3,7 @@
   <el-button type="primary" style="margin-left:10px" @click="load">查询</el-button>
   <div>
     <List :columns="columns" :tableData="tableData" @sort-change="handleSortChange"
-      @filter-change="handleFilterChange" />
+      @filter-change="handleFilterChange" @row-click="handleRowClick"/>
     <CustomPagination :current-page="currentPage" :total="total" :page-size="pageSize"
       @update:currentPage="handleCurrentChange" />
   </div>
@@ -22,13 +22,13 @@ const authStore = useAuthStore();
 
 // 定义表格列
 const columns = [
-  { prop: 'id', label: '比赛ID', sortable: true, columnKey: 'id', width: '100px' },
-  { prop: 'name', label: '比赛名称', minwidth: '200px' },
+  { prop: 'id', label: '比赛ID', sortable: true, columnKey: 'id', minwidth: '100px' },
+  { prop: 'name', label: '比赛名称', minwidth: '300px' },
   { prop: 'startTimeSeconds', label: '开始时间',sortable: true, columnKey: 'startTimeSeconds', minwidth: '150px' },
-  { prop: 'durationSeconds', label: '持续时间', width: '100px' },
+  { prop: 'durationSeconds', label: '持续时间', minwidth: '100px' },
   { prop: 'relativeTimeSeconds', label: '相对时间', sortable: true, columnKey: 'relativeTimeSeconds', minwidth: '100px' },
   {
-    prop: 'phase', label: '阶段', width: '100px',
+    prop: 'phase', label: '阶段', minwidth: '100px',
     filters: [
       { text: 'FINISHED', value: 'FINISHED' },
       { text: 'BEFORE', value: 'BEFORE' },
@@ -36,7 +36,7 @@ const columns = [
     filterPlacement: 'bottom-end',
     component: CustomTag
   },
-  { prop: 'type', label: '类型', width: '100px' }
+  { prop: 'type', label: '类型', minwidth: '100px' }
 ];
 
 // 定义响应式数据
@@ -48,7 +48,8 @@ const input = ref('');
 const selectedPhase = ref(''); // 新增的响应式数据
 const sortProp = ref(''); // 排序字段
 const sortOrder = ref(''); // 排序顺序
-
+const start='start_time_seconds';
+const sort = 'desc';
 // 获取表格数据
 const fetchTableData = async () => {
   try {
@@ -58,8 +59,8 @@ const fetchTableData = async () => {
       pageSize: pageSize.value,
       ...(input.value ? { name: input.value } : {}),
       ...(selectedPhase.value ? { phase: selectedPhase.value } : {}),
-      ...(sortProp.value ? { orderBy: sortProp.value } : {}),
-      ...(sortOrder.value ? { order: sortOrder.value } : {}),
+      ...(sortProp.value ? { orderBy: sortProp.value } :{orderBy: start} ),
+      ...(sortOrder.value ? { order: sortOrder.value } : {order: sort}),
     };
     const response = await contestApi.listContest(params);
     if (response.data && response.data.data) {
@@ -75,26 +76,20 @@ const fetchTableData = async () => {
   }
 };
 
-// 处理当前页码变化
-const handleCurrentChange = (page) => {
-  currentPage.value = page;
-  fetchTableData();
-};
-
 // 处理筛选变化
 const handleFilterChange = (filters) => {
   console.log('filters:', filters);
   // 遍历 filters 对象，找到包含 "phase" 的过滤条件
   for (const key in filters) {
     if (filters[key] && Array.isArray(filters[key]) && filters[key].length > 0) {
-      // 假设 phase 相关的过滤条件在 filters 对象中是唯一的
       if (columns.some(column => column.prop === 'phase' && column.label.includes('阶段'))) {
         selectedPhase.value = filters[key][0];
+        sortProp.value = 'phase';
         break;
       }
     }
   }
-  sortProp.value = 'phase';
+
   fetchTableData();
 };
 
@@ -117,6 +112,12 @@ onMounted(() => {
 const load = () => {
   currentPage.value = 1; // 查询时重置为第一页
   fetchTableData();
+};
+
+
+const handleRowClick = (row) => {
+    const url = `https://codeforces.com/contest/${row.id}`;
+    window.open(url, '_blank');
 };
 </script>
 

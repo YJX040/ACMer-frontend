@@ -23,7 +23,7 @@ import Bread from '@/layout/Bread.vue'
 import { RouterView } from 'vue-router'
 import { ref, computed } from 'vue'
 
-const isCollapsed = ref(false)
+const isCollapsed = ref(true)
 
 const handleCollapse = (collapse) => {
   isCollapsed.value = collapse
