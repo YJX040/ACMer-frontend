@@ -20,6 +20,9 @@
         <span v-else-if="col.prop === 'creationTimeSeconds'">{{ formatTime(scope.row, col, scope.row[col.prop])
           }}</span>
         <span v-else-if="col.prop === 'tags' || col.prop === 'phase'">
+          <!-- <el-tag v-if="scope.row.tags===undefined||scope.row.tags===''" >
+            {{ '' }}
+          </el-tag> -->
           <CustomTag :tags="scope.row[col.prop]" />
         </span>
         <span v-else-if="col.prop === 'verdict'">
@@ -40,8 +43,31 @@
           <el-tag v-else-if="scope.row.rating >= 1200" type="primary">
             {{ scope.row.rating }}
           </el-tag>
+          <el-tag v-else-if="scope.row.rating===undefined||scope.row.rating===' - '"  type="info">
+            {{ 0 }}
+          </el-tag>
           <el-tag v-else type="info">
             {{ scope.row.rating }}
+          </el-tag>
+        </span>
+        <span v-else-if="col.prop === 'cfRanking'">
+          <el-tag v-if="scope.row.cfRanking>= 2400" type="danger">
+            {{ scope.row.cfRanking }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.cfRanking >= 2100" type="warning">
+            {{ scope.row.cfRanking }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.cfRanking >= 1800" type="success">
+            {{ scope.row.cfRanking }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.cfRanking>= 1200" type="primary">
+            {{ scope.row.cfRanking }}
+          </el-tag>
+          <el-tag v-else-if="scope.row.cfRanking===undefined||scope.row.cfRanking===' - '"  type="info">
+            {{ 0 }}
+          </el-tag>
+          <el-tag v-else type="info">
+            {{ scope.row.cfRanking }}
           </el-tag>
         </span>
         <span v-else>{{ scope.row[col.prop] }}</span>

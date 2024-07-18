@@ -84,15 +84,8 @@ const fetchTableData = async () => {
   };
   const response = await contestApi.listProblem(params);
   tableData.value = response.data.data.items;
-  // for (let i = 0; i < tableData.length; i++) {
-  //   for (const key in eachObj) {
-  //     if (key==='rating'){
-  //       if(tableData[i][key]===undefined||tableData[i][key]===null||)
-  //     }
-  //   }
-  // }
   total.value = response.data.data.total;
-  // ElMessage.success('获取题目列表成功');
+
 };
 
 // 处理当前页码变化

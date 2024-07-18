@@ -5,7 +5,6 @@
 <script>
 import { defineComponent, onMounted, ref, watch,nextTick } from 'vue';
 import * as echarts from 'echarts';
-import elementResizeDetectorMaker from 'element-resize-detector';
 
 export default defineComponent({
   name: 'LineChart',

@@ -51,16 +51,12 @@ const generateProblemSets = async () => {
     const response = await trainApi.trainList({
       setNum: problemSetsCount.value
     });
-    if (response.data.code === 20021) {
       const data = response.data.data.map((set, index) => ({
         index: index + 1,
         problems: set.problems
       }));
       authStore.setProblemSets(data); // 更新题目集数据
-      ElMessage.success(response.data.message);
-    } else {
-      ElMessage.error(response.data.message);
-    }
+      // ElMessage.success(response.data.message);
 };
 
 // 显示题目详情

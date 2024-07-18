@@ -66,7 +66,7 @@
             </el-col>
             <el-col :span="8">
                 <!-- 个人信息展示框 -->
-                <el-card v-if="!authStore.isGuest" class="user-info">
+                <el-card v-if="!authStore.isGuest" class="user-info" @click="goto('/user')">
                     <template v-slot:header>
                         <span>个人信息</span>
                     </template>
@@ -115,7 +115,6 @@ import userApi from '@/api/user'; // 导入用户 API 模块
 import cfApi from '@/api/contest'; // 导入 Codeforces API 模块
 import { formatTime, formatDuration } from '@/utils/timeUtils'; // 导入时间格式化函数
 import ColumnChart from '@/components/ColumnChart.vue';
-import moment from 'moment';
 
 const authStore = useAuthStore(); // 初始化 auth store 实例
 const router = useRouter();

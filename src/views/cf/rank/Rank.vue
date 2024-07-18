@@ -18,7 +18,7 @@ import CustomPagination from '@/components/CustomPagination.vue';
 import { ElMessage } from 'element-plus';
 
 const columns = [
-  { prop: 'id', label: '排名' },
+  { prop: 'id', label: '用户ID' },
   { prop: 'handle', label: '用户名', },
   { prop: 'rating', label: '分数' },
   { prop: 'user', label: '用户持有者', sortable: false },

@@ -93,6 +93,7 @@
         <div class="button-section">
           <el-button v-show="!isEditing" @click="isEditing = true">修改信息</el-button>
           <el-button v-show="isEditing" type="primary" @click="saveAll">保存</el-button>
+          <el-button v-show="isEditing" @click="isEditing = false">取消</el-button>
           <el-button v-show="!isCoding" @click="isCoding = true">修改密码</el-button>
           <el-button v-show="isCoding" type="primary" @click="changeCode">保存密码</el-button>
           <el-button v-show="isCoding" @click="isCoding = false">取消修改密码</el-button>
@@ -244,7 +245,7 @@ const setMainAccount = (handle) => {
 };
 
 const addCfSubAccount = async (account) => {
-  const handle = trim(account);
+  const handle = account.trim();
   const response = await userApi.addSubAccount({
     handle,
   });

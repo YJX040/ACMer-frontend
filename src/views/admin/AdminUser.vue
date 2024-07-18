@@ -1,11 +1,9 @@
 <template>
   <div class="user-management">
-      <div class="clearfix">
+      <!-- <div class="clearfix">
         <span>用户管理</span>
-      </div>
-      <el-table :data="users" style="width: 100%" 
-
-      >
+      </div> -->
+      <el-table :data="users" style="width: 100%"  >
         <el-table-column prop="id" label="ID"></el-table-column>
         <el-table-column prop="username" label="用户名">
           <template #default="{ row }">

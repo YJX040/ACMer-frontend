@@ -103,6 +103,13 @@ const handleSortChange = ({ prop, order }) => {
   fetchTableData();
 };
 
+
+// 处理当前页码变化
+const handleCurrentChange = (page) => {
+  currentPage.value = page;
+  fetchTableData();
+};
+
 // 组件挂载时获取初始数据
 onMounted(() => {
   fetchTableData();

@@ -1,8 +1,8 @@
 <template>
   <div class="user-management">
-    <div class="clearfix">
+    <!-- <div class="clearfix">
       <span>CF用户管理</span>
-    </div>
+    </div> -->
     <el-table :data="users" style="width: 100%">
       <el-table-column prop="id" label="ID"></el-table-column>
       <el-table-column prop="handle" label="用户名">
